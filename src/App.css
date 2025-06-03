@@ -1,38 +1,349 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+body, .App {
+  background: #f9fbfd;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
+  color: #23272f;
+  margin: 0;
+  padding: 0;
   min-height: 100vh;
+}
+
+.Header {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 2.5vw 0 1.5vw 0;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+  border-bottom: 1px solid #f2f4f8;
+}
+
+.LogoTitle {
+  display: flex;
+  align-items: center;
+  gap: 1.2vw;
+}
+
+.Logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,119,255,0.04);
+}
+
+.HeaderLinks {
+  display: flex;
+  gap: 2.5vw;
+  align-items: center;
+  margin-top: 1vw;
+}
+
+.HeaderLinks a {
+  text-decoration: none;
+  color: #23272f;
+  font-weight: 500;
+  padding: 0.4em 1em;
+  border-radius: 8px;
+  transition: background 0.18s, color 0.18s;
+  font-size: 1.05em;
+  letter-spacing: 0.01em;
+}
+
+.HeaderLinks a:hover {
+  background: #f0f7ff;
+  color: #0077ff;
+}
+
+.SocialIcons {
+  display: flex;
+  gap: 1vw;
+  align-items: center;
+}
+
+.SocialIcon {
+  width: 2.2em;
+  height: 2.2em;
+  min-width: 32px;
+  min-height: 32px;
+  max-width: 40px;
+  max-height: 40px;
+  object-fit: contain;
+  filter: grayscale(0.2) brightness(0.97);
+  transition: filter 0.18s, transform 0.18s;
+  cursor: pointer;
+  border-radius: 50%;
+  background: #f5f7fa;
+  padding: 0.2em;
+}
+.SocialIcon:hover {
+  filter: none;
+  transform: scale(1.12);
+  background: #e0e7ef;
+}
+
+.Activities {
+  display: flex;
+  gap: 2vw;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: flex-start;
+  margin: 4vw 0 3vw 0;
+  flex-wrap: wrap;
 }
 
-.App-link {
-  color: #61dafb;
+.ActivityLink > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+  padding: 1.2vw 1.2vw 0.8vw 1.2vw;
+  min-width: 110px;
+  min-height: 140px;
+  transition: box-shadow 0.18s, transform 0.18s, background 0.18s;
+  border: 1px solid #f3f6fa;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.ActivityLink > div:hover {
+  box-shadow: 0 8px 32px rgba(0,119,255,0.10);
+  background: #f0f7ff;
+  transform: translateY(-6px) scale(1.04);
+  border-color: #e0e7ef;
+}
+
+.SwimIcon {
+  width: 7vw;
+  height: 7vw;
+  max-width: 60px;
+  max-height: 60px;
+  min-width: 36px;
+  min-height: 36px;
+  object-fit: contain;
+  margin-bottom: 0.7em;
+  filter: drop-shadow(0 2px 8px rgba(0,119,255,0.07));
+}
+
+.Activities p {
+  margin: 0.2em 0 0 0;
+  font-size: 1.08em;
+  color: #1a2a3a;
+  text-align: center;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.MainContent {
+  max-width: 650px;
+  margin: 4vw auto 4vw auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 18px rgba(0,0,0,0.04);
+  padding: 2.5vw 5vw;
+  text-align: center;
+}
+
+.MainContent h2 {
+  margin-top: 0;
+  color: #0077ff;
+  font-size: 2.2em;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.MainContent section {
+  margin-bottom: 2.5em;
+  padding-bottom: 1em;
+  border-bottom: 1px solid #f2f4f8;
+}
+.MainContent section:last-child {
+  border-bottom: none;
+}
+
+.MainContent h3 {
+  color: #23272f;
+  font-size: 1.25em;
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.GamesList {
+  margin: 1em 0 0 0;
+  padding: 0;
+  list-style: none;
+  width: 100%;
+  text-align: left;
+}
+.GamesList li {
+  background: #f8fafc;
+  margin: 0.2em 0;
+  padding: 0.5em 1em;
+  border-radius: 8px;
+  font-size: 1em;
+  color: #0077ff;
+  transition: background 0.18s;
+  border: none;
+}
+.GamesList li:hover {
+  background: #e0e7ef;
+}
+
+.Footer {
+  background: #fff;
+  text-align: center;
+  padding: 2vw 0 1vw 0;
+  border-top: 1px solid #eaeaea;
+  font-size: 1em;
+  color: #888;
+  margin-top: 3vw;
+}
+
+.FooterLinks {
+  display: flex;
+  justify-content: center;
+  gap: 2vw;
+  margin-bottom: 0.5em;
+}
+
+.FooterLinks a {
+  color: #888;
+  text-decoration: none;
+  transition: color 0.18s;
+  font-size: 1em;
+  padding: 0.2em 0.6em;
+  border-radius: 6px;
+}
+.FooterLinks a:hover {
+  color: #0077ff;
+  background: #f0f7ff;
+}
+.GameCard {
+  background: #f8fafc;
+  margin: 0.2em 0;
+  padding: 0.7em 1em;
+  border-radius: 10px;
+  font-size: 1em;
+  color: #0077ff;
+  transition: background 0.18s, box-shadow 0.18s;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0,119,255,0.03);
+}
+.GameCard:hover {
+  background: #e0e7ef;
+  box-shadow: 0 4px 16px rgba(0,119,255,0.07);
+}
+
+.CheckoutModal {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  background: rgba(30,40,60,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.CheckoutContent {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0,119,255,0.10);
+  padding: 2.5vw 5vw;
+  max-width: 95vw;
+  width: 350px;
+  position: relative;
+  text-align: center;
+  animation: popIn 0.2s;
+}
+@keyframes popIn {
+  from { transform: scale(0.96);}
+  to   { transform: scale(1);}
+}
+.CloseBtn {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  background: none;
+  border: none;
+  font-size: 2em;
+  color: #bbb;
+  cursor: pointer;
+  transition: color 0.18s;
+}
+.CloseBtn:hover {
+  color: #0077ff;
+}
+
+.CheckoutForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  margin-top: 1.5em;
+}
+.CheckoutForm input {
+  padding: 0.7em 1em;
+  border-radius: 8px;
+  border: 1px solid #e0e7ef;
+  font-size: 1em;
+  outline: none;
+  transition: border 0.18s;
+}
+.CheckoutForm input:focus {
+  border: 1.5px solid #0077ff;
+}
+.CheckoutForm button[type="submit"] {
+  background: #0077ff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7em 2em;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.18s;
+}
+.CheckoutForm button[type="submit"]:hover {
+  background: #005fcc;
+  transform: translateY(-2px) scale(1.03);
+}
+
+/* Add at the end of App.css */
+@media (max-width: 600px) {
+  .MainContent {
+    padding: 4vw 2vw;
+    max-width: 98vw;
   }
-  to {
-    transform: rotate(360deg);
+  .Activities {
+    gap: 3vw;
+    margin: 6vw 0 4vw 0;
+  }
+  .ActivityLink > div {
+    min-width: 90px;
+    min-height: 110px;
+    padding: 3vw 2vw 2vw 2vw;
+  }
+  .SwimIcon {
+    width: 16vw;
+    height: 16vw;
+    max-width: 48px;
+    max-height: 48px;
+    min-width: 28px;
+    min-height: 28px;
+  }
+  .GamesList li, .GameCard {
+    font-size: 0.98em;
+    padding: 0.6em 0.5em;
+  }
+  .CheckoutContent {
+    width: 98vw;
+    padding: 5vw 2vw;
+  }
+  .HeaderLinks {
+    flex-direction: column;
+    gap: 1vw;
+    margin-top: 2vw;
   }
 }
