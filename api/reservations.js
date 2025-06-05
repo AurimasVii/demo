@@ -13,6 +13,15 @@ export default async function handler(req, res) {
     const reservation = new Reservation({ ...req.body, created: new Date() });
     await reservation.save();
     res.status(200).json({ success: true });
+  } else if (req.method === 'GET') {
+    // Return all reservations for admin
+    const reservations = await Reservation.find();
+    res.status(200).json(reservations);
+  } else if (req.method === 'DELETE') {
+    const { _id } = req.body;
+    if (!_id) return res.status(400).json({ error: 'Missing _id' });
+    await Reservation.findByIdAndDelete(_id);
+    res.status(204).end();
   } else {
     res.status(405).end();
   }

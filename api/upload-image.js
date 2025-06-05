@@ -1,4 +1,4 @@
-import formidable from 'formidable';
+import { IncomingForm } from 'formidable';
 import fs from 'fs';
 import path from 'path';
 
@@ -10,7 +10,7 @@ export const config = {
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
-  const form = new formidable.IncomingForm();
+  const form = new IncomingForm();
   form.uploadDir = path.join(process.cwd(), 'public', 'icons');
   form.keepExtensions = true;
   form.maxFileSize = 5 * 1024 * 1024; // 5MB

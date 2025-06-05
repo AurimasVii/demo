@@ -54,45 +54,50 @@
       return d.toLocaleString('lt-LT', { dateStyle: 'short', timeStyle: 'short' });
     }
     function loadReservations() {
-      const res = JSON.parse(localStorage.getItem('reservations') || '[]');
-      const categories = JSON.parse(localStorage.getItem('categories') || '[]');
-      document.getElementById('totalRes').textContent = 'Iš viso rezervacijų: ' + res.length;
-      document.getElementById('activityCount').textContent = 'Aktyvių veiklų: ' + (categories.length || 0);
-      const tbody = document.getElementById('resBody');
-      tbody.innerHTML = '';
-      if (res.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" class="no-res">Nėra rezervacijų</td></tr>';
-        return;
-      }
-      res.slice().reverse().forEach((r, idx) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${r.game?.name || ''}</td>
-          <td>${r.game?.category || ''}</td>
-          <td>${r.name}</td>
-          <td>${r.email}</td>
-          <td>${r.phone}</td>
-          <td>${r.date}</td>
-          <td>${r.time}</td>
-          <td>${formatDateTime(r.created)}</td>
-          <td><button onclick="deleteReservation(${res.length-1-idx})" style='color:#d32f2f;font-weight:600;'>Ištrinti</button></td>
-        `;
-        tbody.appendChild(tr);
-      });
+      fetch('/api/reservations')
+        .then(res => res.json())
+        .then(reservations => {
+          fetch('/api/activities')
+            .then(res => res.json())
+            .then(activities => {
+              document.getElementById('totalRes').textContent = 'Iš viso rezervacijų: ' + reservations.length;
+              document.getElementById('activityCount').textContent = 'Aktyvių veiklų: ' + (activities.length || 0);
+              const tbody = document.getElementById('resBody');
+              tbody.innerHTML = '';
+              if (reservations.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="no-res">Nėra rezervacijų</td></tr>';
+                return;
+              }
+              reservations.slice().reverse().forEach((r, idx) => {
+                const activity = activities.find(a => a._id === r.activityId);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                  <td>${activity ? activity.name : 'Nežinoma veikla'}</td>
+                  <td>${activity ? activity.category : ''}</td>
+                  <td>${r.name}</td>
+                  <td>${r.email}</td>
+                  <td>${r.phone}</td>
+                  <td>${r.date}</td>
+                  <td>${r.time}</td>
+                  <td>${r.created ? new Date(r.created).toLocaleString('lt-LT') : ''}</td>
+                  <td><button onclick="deleteReservation('${r._id}')" style='color:#d32f2f;font-weight:600;'>Ištrinti</button></td>
+                `;
+                tbody.appendChild(tr);
+              });
+            });
+        });
     }
-    function deleteReservation(idx) {
-      const res = JSON.parse(localStorage.getItem('reservations') || '[]');
+
+    async function deleteReservation(id) {
       if (!confirm('Ar tikrai norite ištrinti šią rezervaciją?')) return;
-      res.splice(idx, 1);
-      localStorage.setItem('reservations', JSON.stringify(res));
+      await fetch('/api/reservations', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ _id: id })
+      });
       loadReservations();
     }
-    // Listen for reservation changes in real time (including from other tabs)
-    window.addEventListener('storage', function(e) {
-      if (e.key === 'reservations') {
-        loadReservations();
-      }
-    });
+
     window.addEventListener('DOMContentLoaded', loadReservations);
     window.deleteReservation = deleteReservation;
     </script>

@@ -272,6 +272,23 @@
       <div id="infoBody"></div>
     </div>
   </div>
+  <div id="reservationModal" style="display:none;position:fixed;z-index:3000;inset:0;background:rgba(30,40,60,0.18);align-items:center;justify-content:center;">
+    <div id="reservationModalContent" style="background:#fff;border-radius:18px;box-shadow:0 8px 32px rgba(0,119,255,0.10);padding:2.5vw 5vw;max-width:95vw;width:350px;position:relative;text-align:center;display:flex;flex-direction:column;align-items:center;">
+      <button id="closeReservationModal" style="position:absolute;top:1em;right:1em;background:none;border:none;font-size:2em;color:#bbb;cursor:pointer;">&times;</button>
+      <h2 id="reservationModalTitle" style="color:#0077ff;font-weight:700;margin-bottom:0.7em;">Rezervacija</h2>
+      <form id="reservationForm" style="width:100%;max-width:320px;display:flex;flex-direction:column;gap:0.7em;">
+        <input type="text" name="name" placeholder="Jūsų vardas" required />
+        <input type="email" name="email" placeholder="El. paštas" required />
+        <input type="tel" name="phone" placeholder="Telefonas" required />
+        <label style="margin-top:0.5em;font-weight:500;text-align:left;">Pasirinkite datą ir laiką:</label>
+        <input type="date" name="date" required />
+        <input type="time" name="time" required />
+        <button type="submit" style="background:#0077ff;color:#fff;border:none;border-radius:8px;padding:0.7em 2em;font-size:1em;font-weight:500;cursor:pointer;margin-top:1em;">Rezervuoti</button>
+      </form>
+      <div id="reservationSuccess" style="display:none;color:#388e3c;font-weight:600;margin-top:1em;"></div>
+      <div id="reservationError" style="display:none;color:#d32f2f;font-weight:600;margin-top:1em;"></div>
+    </div>
+  </div>
   <script>
     // Fetch activities from backend and render selected game
     const selectedGameId = localStorage.getItem('selectedGameId');
@@ -348,21 +365,45 @@
           }
         };
         document.getElementById('reserveBtn').onclick = function() {
-          // Show reservation form/modal (implement as needed)
-          // Example: POST to backend
-          const name = prompt('Jūsų vardas:');
-          const email = prompt('El. paštas:');
-          const phone = prompt('Telefonas:');
-          const date = prompt('Data (YYYY-MM-DD):');
-          const time = prompt('Laikas (HH:MM):');
-          if (!name || !email || !phone || !date || !time) return;
+          document.getElementById('reservationModal').style.display = 'flex';
+          document.getElementById('reservationSuccess').style.display = 'none';
+          document.getElementById('reservationError').style.display = 'none';
+          document.getElementById('reservationForm').reset();
+        };
+        document.getElementById('closeReservationModal').onclick = function() {
+          document.getElementById('reservationModal').style.display = 'none';
+        };
+        document.getElementById('reservationModal').onclick = function(e) {
+          if (e.target === this) this.style.display = 'none';
+        };
+        document.getElementById('reservationForm').onsubmit = function(e) {
+          e.preventDefault();
+          const form = e.target;
+          const reservation = {
+            activityId: game._id,
+            name: form.name.value,
+            email: form.email.value,
+            phone: form.phone.value,
+            date: form.date.value,
+            time: form.time.value
+          };
           fetch('/api/reservations', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ activityId: game._id, name, email, phone, date, time })
+            body: JSON.stringify(reservation)
           })
             .then(res => res.json())
-            .then(() => alert('Rezervacija sėkmingai pateikta!'));
+            .then(() => {
+              document.getElementById('reservationSuccess').textContent = 'Rezervacija sėkmingai pateikta!';
+              document.getElementById('reservationSuccess').style.display = 'block';
+              document.getElementById('reservationError').style.display = 'none';
+              form.reset();
+            })
+            .catch(() => {
+              document.getElementById('reservationError').textContent = 'Klaida pateikiant rezervaciją.';
+              document.getElementById('reservationError').style.display = 'block';
+              document.getElementById('reservationSuccess').style.display = 'none';
+            });
         };
       });
     document.getElementById('menuBtn').onclick = function() {
@@ -395,8 +436,9 @@
         link.onclick = function(e) {
           e.preventDefault();
           var catKey = link.getAttribute('data-cat');
+          // Save to localStorage for main page scroll
           localStorage.setItem('scrollToCategory', catKey);
-          window.location.href = '/';
+          window.location.href = '/#' + catKey;
         };
       });
     }
