@@ -191,7 +191,7 @@ function App() {
 
   // Fetch activities from backend on mount
   useEffect(() => {
-    fetch('http://localhost:4000/api/activities')
+    fetch('/api/activities')
       .then(res => res.json())
       .then(data => {
         // Group activities by category name
@@ -221,7 +221,7 @@ function App() {
       date: form.date.value,
       time: form.time.value
     };
-    fetch('http://localhost:4000/api/reservations', {
+    fetch('/api/reservations', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(reservation)
