@@ -275,12 +275,39 @@
   <script>
     // Fetch activities from backend and render selected game
     const selectedGameId = localStorage.getItem('selectedGameId');
-    fetch('http://localhost:4000/api/activities')
+    // Use relative API endpoint for Vercel compatibility
+    fetch('/api/activities')
       .then(res => res.json())
       .then(data => {
+        // Group activities by category
+        const grouped = {};
+        data.forEach(act => {
+          if (!grouped[act.category]) grouped[act.category] = [];
+          grouped[act.category].push(act);
+        });
+        // Build categories array for side menu
+        const cats = Object.keys(grouped).map(catName => ({
+          key: catName.replace(/\s/g, '').toLowerCase(),
+          name: catName,
+          icon: {
+            'Vandens pramogos': '/icons/swimming.png',
+            'Renginių įrangos nuoma': '/icons/tools.png',
+            'Pramogų vedimas': '/icons/confetti.png',
+            'Lauko žaidimai': '/icons/park.png',
+            'Vidaus pramogos': '/icons/cinema.png',
+            'Šaudymo pramogos': '/icons/shooting-range.png'
+          }[catName] || '/icons/confetti.png',
+          games: grouped[catName]
+        }));
+        // Save to localStorage for admin/user flows
+        localStorage.setItem('categories', JSON.stringify(cats));
+        // Render side menu categories
+        renderSideMenuCategories(cats);
+        // Find and render selected game
         let game = null;
         if (selectedGameId) {
-          game = data.find(g => g._id === selectedGameId);
+          // Try to find by _id (Mongo) or fallback to name
+          game = data.find(g => g._id === selectedGameId) || data.find(g => g.name === selectedGameId);
         }
         if (!game) {
           document.querySelector('.container').innerHTML = '<p>Žaidimo informacija nerasta.</p>';
@@ -291,11 +318,12 @@
         document.getElementById('gamePrice').textContent = 'Kaina: ' + (game.price || '');
         document.getElementById('gameDesc').textContent = game.description || '';
         document.getElementById('gameInfo').textContent = game.info || '';
-        document.getElementById('reservationPrice').textContent = game.price || '';
-        document.getElementById('reservationGameInfo').textContent = game.info || '';
+        document.getElementById('reservationInfo').textContent = game.info || '';
         // Slidable photos (use array if available, else fallback to single image)
         let images = Array.isArray(game.images) && game.images.length ? game.images : (game.image ? [game.image] : []);
         let current = 0;
+        const slider = document.getElementById('slider');
+        slider.innerHTML = `<button class="slider-btn left" id="prevBtn">&#8592;</button><img id="sliderImg" src="" alt="Žaidimo nuotrauka" /><button class="slider-btn right" id="nextBtn">&#8594;</button>`;
         const sliderImg = document.getElementById('sliderImg');
         function showImg(idx) {
           if (images.length > 0) {
@@ -328,13 +356,10 @@
           const date = prompt('Data (YYYY-MM-DD):');
           const time = prompt('Laikas (HH:MM):');
           if (!name || !email || !phone || !date || !time) return;
-          fetch('http://localhost:4000/api/reservations', {
+          fetch('/api/reservations', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              activityId: game._id,
-              name, email, phone, date, time
-            })
+            body: JSON.stringify({ activityId: game._id, name, email, phone, date, time })
           })
             .then(res => res.json())
             .then(() => alert('Rezervacija sėkmingai pateikta!'));
@@ -343,12 +368,12 @@
     document.getElementById('menuBtn').onclick = function() {
       document.getElementById('sideMenuDrawer').style.display = 'flex';
       setTimeout(function() {
-        document.getElementById('sideMenuDrawer').style.transform = 'translateX(0)';
+        document.getElementById('sideMenuDrawer').classList.add('open');
         document.getElementById('sideMenuOverlay').style.display = 'block';
       }, 10);
     };
     document.getElementById('closeMenuBtn').onclick = function() {
-      document.getElementById('sideMenuDrawer').style.transform = 'translateX(-110%)';
+      document.getElementById('sideMenuDrawer').classList.remove('open');
       setTimeout(function() {
         document.getElementById('sideMenuDrawer').style.display = 'none';
         document.getElementById('sideMenuOverlay').style.display = 'none';
@@ -358,8 +383,8 @@
       document.getElementById('closeMenuBtn').onclick();
     };
     // Render categories in side menu
-    function renderSideMenuCategories() {
-      var cats = JSON.parse(localStorage.getItem('categories') || '[]');
+    function renderSideMenuCategories(cats) {
+      if (!cats) cats = JSON.parse(localStorage.getItem('categories') || '[]');
       var out = '';
       cats.forEach(function(cat) {
         out += `<a href="#${cat.key}" class="sideMenuCatLink" data-cat="${cat.key}" style="display:flex;align-items:center;gap:0.7em;text-decoration:none;color:#0077ff;font-weight:500;padding:0.4em 0;border-radius:8px;"><img src="${cat.icon || 'logo192.png'}" alt="${cat.name}" style="width:32px;height:32px;border-radius:8px;object-fit:contain;background:#f8fafc;" /><span>${cat.name}</span></a>`;
@@ -375,7 +400,6 @@
         };
       });
     }
-    renderSideMenuCategories();
     const infoContent = {
       apie: {title: 'Apie mus', body: '<p>Esame pramogų ir renginių organizavimo komanda, siekianti suteikti nepamirštamų įspūdžių visiems savo klientams. Mūsų tikslas – padėti žmonėms atrasti naujas veiklas, patirti nuotykių ir kurti bendrystės akimirkas.</p>'},
       paslaugos: {title: 'Paslaugos', body: '<p>Siūlome įvairias pramogas, renginių įrangos nuomą, žaidimų vedimą, lauko ir vidaus žaidimus, šaudymo pramogas bei kitas paslaugas tiek vaikams, tiek suaugusiems.</p>'},
