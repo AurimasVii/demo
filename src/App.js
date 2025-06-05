@@ -1,45 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import swimming from './icons/swimming.png';
-import tools from './icons/tools.png';
-import entertainment from './icons/confetti.png';
-import outside from './icons/park.png';
-import inside from './icons/cinema.png';
-import shooting from './icons/shooting-range.png';
-import insta from './icons/instagram.png';
-import facebook from './icons/facebook.png';
-import gmail from './icons/mail.png';
 
-// Example images for games 
-import game1 from './icons/swimming.png';
-import game2 from './icons/tools.png';
-import game3 from './icons/confetti.png';
-
+// In defaultCategories, use public path for icons
 const defaultCategories = [
   {
     key: 'swimming',
     name: 'Vandens pramogos',
-    icon: swimming,
+    icon: '/icons/swimming.png',
     games: [
       {
         name: 'Vandens futbolas',
         description: 'Smagus žaidimas vandenyje su kamuoliu.',
-        image: game1,
+        image: '/icons/swimming.png',
         price: '40€ / val.',
         info: 'Susitinkame prie pagrindinio ežero liepto. Instruktorius suteiks įrangą ir paaiškins taisykles.'
       },
       {
         name: 'Baidarės',
         description: 'Plaukimas baidarėmis upėje ar ežere.',
-        image: game2,
+        image: '/icons/tools.png',
         price: '30€ / val.',
         info: 'Startas nuo upės prieplaukos. Visi dalyviai gauna gelbėjimosi liemenes ir instruktažą.'
       },
       {
         name: 'Vandens mūšis',
         description: 'Vandens ginklų mūšis vaikams ir suaugusiems.',
-        image: game3,
+        image: '/icons/confetti.png',
         price: '25€ / val.',
         info: 'Renkamės prie vaikų žaidimų aikštelės. Vandens ginklai suteikiami vietoje.'
       }
@@ -48,26 +35,26 @@ const defaultCategories = [
   {
     key: 'tools',
     name: 'Renginių įrangos nuoma',
-    icon: tools,
+    icon: '/icons/tools.png',
     games: [
       {
         name: 'Garso aparatūra',
         description: 'Profesionali garso įranga jūsų renginiui.',
-        image: tools,
+        image: '/icons/tools.png',
         price: '50€ / diena',
         info: 'Įranga pristatoma į jūsų pasirinktą vietą ir sumontuojama mūsų komandos.'
       },
       {
         name: 'Šviesos efektai',
         description: 'Įvairūs šviesos efektai šventėms.',
-        image: entertainment,
+        image: '/icons/confetti.png',
         price: '35€ / vakaras',
         info: 'Šviesos efektai įrengiami prieš renginį, konsultuojame dėl geriausio išdėstymo.'
       },
       {
         name: 'Scenos nuoma',
         description: 'Mobilios scenos nuoma renginiams.',
-        image: outside,
+        image: '/icons/park.png',
         price: '100€ / diena',
         info: 'Scena pristatoma ir surenkama jūsų nurodytoje vietoje.'
       }
@@ -76,26 +63,26 @@ const defaultCategories = [
   {
     key: 'entertainment',
     name: 'Pramogų vedimas',
-    icon: entertainment,
+    icon: '/icons/confetti.png',
     games: [
       {
         name: 'Karaoke vakaras',
         description: 'Linksmas karaoke vakaras su draugais.',
-        image: entertainment,
+        image: '/icons/confetti.png',
         price: '60€ / vakaras',
         info: 'Renginys vyksta mūsų salėje arba jūsų pasirinktoje vietoje. Visi gauna dainų sąrašus.'
       },
       {
         name: 'Teminiai žaidimai',
         description: 'Teminiai žaidimai pagal jūsų pageidavimą.',
-        image: inside,
+        image: '/icons/cinema.png',
         price: '45€ / val.',
         info: 'Žaidimų vedėjas atvyksta į jūsų šventę ir pasirūpina visomis priemonėmis.'
       },
       {
         name: 'Protų mūšis',
         description: 'Komandinis žinių turnyras.',
-        image: tools,
+        image: '/icons/tools.png',
         price: '55€ / vakaras',
         info: 'Renginys vyksta kavinėje arba nuotoliniu būdu. Komandos registruojamos iš anksto.'
       }
@@ -104,26 +91,26 @@ const defaultCategories = [
   {
     key: 'outside',
     name: 'Lauko žaidimai',
-    icon: outside,
+    icon: '/icons/park.png',
     games: [
       {
         name: 'Kubb',
         description: 'Skandinaviškas lauko žaidimas visai šeimai.',
-        image: outside,
+        image: '/icons/park.png',
         price: '20€ / žaidimas',
         info: 'Žaidimas vyksta parke, įranga suteikiama vietoje.'
       },
       {
         name: 'Petankė',
         description: 'Prancūziškas kamuoliukų žaidimas.',
-        image: swimming,
+        image: '/icons/swimming.png',
         price: '15€ / žaidimas',
         info: 'Petankės aikštelė įrengiama jūsų pasirinktoje vietoje.'
       },
       {
         name: 'Frisbis',
         description: 'Disko metimo žaidimas lauke.',
-        image: tools,
+        image: '/icons/tools.png',
         price: '10€ / val.',
         info: 'Frisbis žaidžiamas stadione arba parke, diskai suteikiami.'
       }
@@ -132,26 +119,26 @@ const defaultCategories = [
   {
     key: 'inside',
     name: 'Vidaus pramogos',
-    icon: inside,
+    icon: '/icons/cinema.png',
     games: [
       {
         name: 'Stalo futbolas',
         description: 'Klasikinis stalo futbolo žaidimas.',
-        image: inside,
+        image: '/icons/cinema.png',
         price: '12€ / val.',
         info: 'Stalo futbolas žaidžiamas mūsų patalpose arba pristatomas į jūsų šventę.'
       },
       {
         name: 'Stalo tenisas',
         description: 'Stalo tenisas dviems arba keturiems.',
-        image: swimming,
+        image: '/icons/swimming.png',
         price: '10€ / val.',
         info: 'Stalo teniso stalą galime pristatyti į jūsų pasirinktą vietą.'
       },
       {
         name: 'Karaoke',
         description: 'Dainuokite mėgstamas dainas.',
-        image: entertainment,
+        image: '/icons/confetti.png',
         price: '30€ / vakaras',
         info: 'Karaoke įranga ir dainų sąrašai suteikiami vietoje.'
       }
@@ -160,26 +147,26 @@ const defaultCategories = [
   {
     key: 'shooting',
     name: 'Šaudymo pramogos',
-    icon: shooting,
+    icon: '/icons/shooting-range.png',
     games: [
       {
         name: 'Lankų šaudymas',
         description: 'Išbandykite taiklumą su lanku.',
-        image: shooting,
+        image: '/icons/shooting-range.png',
         price: '25€ / val.',
         info: 'Šaudymo aikštelė įrengiama lauke, instruktorius prižiūri saugumą.'
       },
       {
         name: 'Šratasvydis',
         description: 'Komandinis šaudymo žaidimas.',
-        image: outside,
+        image: '/icons/park.png',
         price: '40€ / žaidimas',
         info: 'Žaidimas vyksta specialioje aikštelėje, visa įranga suteikiama.'
       },
       {
         name: 'Dažasvydis',
         description: 'Spalvingas šaudymo žaidimas lauke.',
-        image: swimming,
+        image: '/icons/swimming.png',
         price: '50€ / žaidimas',
         info: 'Dažasvydžio rungtynės organizuojamos miške arba aikštelėje, apranga ir kamuoliukai įskaičiuoti.'
       }
@@ -187,31 +174,64 @@ const defaultCategories = [
   }
 ];
 
-function getCategories() {
-  const stored = localStorage.getItem('categories');
-  if (stored) {
-    try {
-      return JSON.parse(stored);
-    } catch {
-      return defaultCategories;
-    }
-  }
-  return defaultCategories;
-}
-
-function setCategories(newCategories) {
-  localStorage.setItem('categories', JSON.stringify(newCategories));
-}
+const categoryIconMap = {
+  'Vandens pramogos': '/icons/swimming.png',
+  'Renginių įrangos nuoma': '/icons/tools.png',
+  'Pramogų vedimas': '/icons/confetti.png',
+  'Lauko žaidimai': '/icons/park.png',
+  'Vidaus pramogos': '/icons/cinema.png',
+  'Šaudymo pramogos': '/icons/shooting-range.png'
+};
 
 function App() {
-  const [categories, setCategoriesState] = useState(getCategories());
+  const [categories, setCategories] = useState([]);
   const [checkoutGame, setCheckoutGame] = useState(null);
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
+  const [infoPage, setInfoPage] = useState(null);
 
-  // Keep localStorage in sync if categories change
-  React.useEffect(() => {
-    setCategories(categories);
-  }, [categories]);
+  // Fetch activities from backend on mount
+  useEffect(() => {
+    fetch('http://localhost:4000/api/activities')
+      .then(res => res.json())
+      .then(data => {
+        // Group activities by category name
+        const grouped = {};
+        data.forEach(act => {
+          if (!grouped[act.category]) grouped[act.category] = [];
+          grouped[act.category].push(act);
+        });
+        const cats = Object.keys(grouped).map(catName => ({
+          key: catName.replace(/\s/g, '').toLowerCase(),
+          name: catName,
+          icon: categoryIconMap[catName] || '/icons/confetti.png',
+          games: grouped[catName]
+        }));
+        setCategories(cats);
+      });
+  }, []);
+
+  function handleReservationSubmit(e) {
+    e.preventDefault();
+    const form = e.target;
+    const reservation = {
+      activityId: checkoutGame && checkoutGame._id,
+      name: form.name.value,
+      email: form.email.value,
+      phone: form.phone.value,
+      date: form.date.value,
+      time: form.time.value
+    };
+    fetch('http://localhost:4000/api/reservations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(reservation)
+    })
+      .then(res => res.json())
+      .then(() => {
+        alert('Rezervacija sėkmingai pateikta!');
+        setCheckoutGame(null);
+      });
+  }
 
   return (
     <div className="App">
@@ -235,14 +255,20 @@ function App() {
           <span style={{fontWeight:600,fontSize:'1.2em',color:'#0077ff'}}>Įmonės Pavadinimas</span>
         </div>
         <nav style={{display:'flex',flexDirection:'column',gap:'0.7em',marginBottom:'2em'}}>
-          <a href="#" style={{textDecoration:'none',color:'#23272f',fontWeight:500}}>Apie mus</a>
-          <a href="#" style={{textDecoration:'none',color:'#23272f',fontWeight:500}}>Paslaugos</a>
-          <a href="#" style={{textDecoration:'none',color:'#23272f',fontWeight:500}}>Užsakymai</a>
+          <a href="#" onClick={() => { setInfoPage('apie'); setSideMenuOpen(false); }} style={{textDecoration:'none',color:'#23272f',fontWeight:500}}>Apie mus</a>
+          <a href="#" onClick={() => { setInfoPage('paslaugos'); setSideMenuOpen(false); }} style={{textDecoration:'none',color:'#23272f',fontWeight:500}}>Paslaugos</a>
+          <a href="#" onClick={() => { setInfoPage('uzsakymai'); setSideMenuOpen(false); }} style={{textDecoration:'none',color:'#23272f',fontWeight:500}}>Užsakymai</a>
         </nav>
         <div style={{display:'flex',gap:'0.7em',marginBottom:'2em'}}>
-          <img src={insta} alt="Instagram" className="SocialIcon" />
-          <img src={facebook} alt="Facebook" className="SocialIcon" />
-          <img src={gmail} alt="Gmail" className="SocialIcon" />
+          <a href="https://instagram.com/aurimasvi" target="_blank" rel="noopener noreferrer">
+            <img src="/icons/instagram.png" alt="Instagram" className="SocialIcon" />
+          </a>
+          <a href="https://facebook.com/aurimas.vizinis" target="_blank" rel="noopener noreferrer">
+            <img src="/icons/facebook.png" alt="Facebook" className="SocialIcon" />
+          </a>
+          <a href="https://mail.google.com/mail/?view=cm&to=aurimav05@gmail.com" target="_blank" rel="noopener noreferrer">
+            <img src="/icons/mail.png" alt="Gmail" className="SocialIcon" />
+          </a>
         </div>
         <div style={{borderTop:'1px solid #f2f4f8',margin:'1em 0'}}></div>
         <div style={{fontWeight:600,marginBottom:'0.7em',color:'#23272f'}}>Kategorijos</div>
@@ -298,20 +324,25 @@ function App() {
           <section key={cat.key} id={cat.key}>
             <h3>{cat.name}</h3>
             <ul className="GamesList">
-              {cat.games.map(game => (
-                <li
-                  key={game.name}
-                  className="GameCard"
-                  style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1em' }}
-                  onClick={() => setCheckoutGame({ ...game, category: cat.name })}
-                >
-                  <img src={game.image} alt={game.name} style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover' }} />
-                  <div>
-                    <div style={{ fontWeight: 600, color: '#23272f' }}>{game.name}</div>
-                    <div style={{ fontSize: '0.97em', color: '#555' }}>{game.description}</div>
-                  </div>
-                </li>
-              ))}
+              {cat.games.map(game => {
+                // Show main image if set, else first image from images array, else fallback to game.image
+                let mainImg = game.mainImage || (Array.isArray(game.images) && game.images.length > 0 ? game.images[0] : game.image);
+                return (
+                  <li
+                    key={game.name}
+                    className="GameCard"
+                    style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1.5em', padding: '1em 0' }}
+                    onClick={() => setCheckoutGame({ ...game, images: game.images, image: mainImg, category: cat.name })}
+                  >
+                    <img src={mainImg} alt={game.name} style={{ width: 96, height: 96, borderRadius: 14, objectFit: 'cover', boxShadow: '0 2px 12px #eaf3ff' }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 600, color: '#23272f', fontSize: '1.15em', marginBottom: '0.3em' }}>{game.name}</div>
+                      <div style={{ fontSize: '1em', color: '#555', marginBottom: '0.3em' }}>{game.description}</div>
+                      <div style={{ color: '#0077ff', fontWeight: 600 }}>{game.price}</div>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           </section>
         ))}
@@ -320,15 +351,33 @@ function App() {
 
       {checkoutGame && (
         <div className="CheckoutModal" onClick={() => setCheckoutGame(null)}>
-          <div className="CheckoutContent" onClick={e => e.stopPropagation()}>
-            <button className="CloseBtn" onClick={() => setCheckoutGame(null)}>&times;</button>
-            <h2>Užsakymas: {checkoutGame.name}</h2>
-            <div style={{ marginBottom: '1em', color: '#888', fontSize: '1em' }}>{checkoutGame.category}</div>
-            <img src={checkoutGame.image} alt={checkoutGame.name} style={{ width: 80, height: 80, borderRadius: 12, objectFit: 'cover', margin: '1em auto' }} />
-            <div style={{ marginBottom: '0.5em', color: '#444' }}>{checkoutGame.description}</div>
-            <div style={{ marginBottom: '0.5em', color: '#0077ff', fontWeight: 600 }}>Kaina: {checkoutGame.price}</div>
-            <div style={{ marginBottom: '1.5em', color: '#555', fontSize: '0.98em' }}>{checkoutGame.info}</div>
-            <div style={{ marginBottom: '2.0em'}}>
+          <div className="CheckoutContent" onClick={e => e.stopPropagation()} style={{maxWidth:480, width:'95vw', maxHeight:'90vh', overflowY:'auto', padding:'2em 1.5em', borderRadius:18, background:'#fff', boxShadow:'0 4px 32px rgba(0,119,255,0.10)', position:'relative', display:'flex', flexDirection:'column', alignItems:'center'}}>
+            <button className="CloseBtn" onClick={() => setCheckoutGame(null)} style={{position:'absolute',top:18,right:18,fontSize:'2em',background:'none',border:'none',color:'#bbb',cursor:'pointer'}}>&times;</button>
+            <h2 style={{marginBottom:'0.5em', color:'#23272f', fontWeight:700, textAlign:'center'}}>{checkoutGame.category}</h2>
+            {/* Image slider for multiple images */}
+            {Array.isArray(checkoutGame.images) && checkoutGame.images.length > 0 ? (
+              <div style={{width:'100%',display:'flex',justifyContent:'center',alignItems:'center',gap:'0.7em',margin:'1em 0',flexWrap:'wrap'}}>
+                {checkoutGame.images.map((img, i) => (
+                  <img key={i} src={img} alt={checkoutGame.name} style={{maxWidth:'120px',maxHeight:'90px',borderRadius:'10px',objectFit:'cover',boxShadow:'0 1px 8px #eaf3ff'}} />
+                ))}
+              </div>
+            ) : (
+              <img src={checkoutGame.image} alt={checkoutGame.name} style={{ width: 80, height: 80, borderRadius: 12, objectFit: 'cover', margin: '1em auto' }} />
+            )}
+            <div style={{ marginBottom: '0.5em', color: '#23272f', fontWeight:600, fontSize:'1.15em', textAlign:'center' }}>{checkoutGame.name}</div>
+            <div style={{ marginBottom: '0.5em', color: '#444', fontSize:'1.05em', textAlign:'center' }}>{checkoutGame.description}</div>
+            <div style={{ marginBottom: '0.5em', color: '#0077ff', fontWeight: 700, fontSize:'1.08em', textAlign:'center' }}>Kaina: {checkoutGame.price}</div>
+            <div style={{ marginBottom: '1.5em', color: '#555', fontSize: '1.05em', whiteSpace:'pre-line', wordBreak:'break-word', lineHeight:1.6, textAlign:'center' }}>{checkoutGame.info}</div>
+            <form className="CheckoutForm" onSubmit={handleReservationSubmit} style={{width:'100%',maxWidth:340,margin:'0 auto'}}>
+              <input type="text" name="name" placeholder="Jūsų vardas" required />
+              <input type="email" name="email" placeholder="El. paštas" required />
+              <input type="tel" name="phone" placeholder="Telefonas" required />
+              <label style={{marginTop:'1em',fontWeight:500}}>Pasirinkite datą ir laiką:</label>
+              <input type="date" name="date" required style={{marginTop:'0.3em'}} />
+              <input type="time" name="time" required style={{marginTop:'0.3em'}} />
+              <button type="submit">Rezervuoti</button>
+            </form>
+            <div style={{ marginTop: '1.5em', width:'100%', display:'flex', justifyContent:'center' }}>
               <button
                 type="button"
                 className="CheckoutInfoBtn"
@@ -341,33 +390,57 @@ function App() {
                   fontSize: '1em',
                   fontWeight: 500,
                   cursor: 'pointer',
-                  transition: 'background 0.18s, transform 0.18s'
+                  transition: 'background 0.18s, transform 0.18s',
+                  margin: '0 auto',
+                  display: 'block'
                 }}
                 onClick={() => {
                   localStorage.setItem('selectedGame', JSON.stringify(checkoutGame));
-                  window.open('/game-info.html', '_blank');
+                  window.location.href = '/game-info.html';
                 }}
               >Daugiau informacijos</button>
             </div>
-            <form className="CheckoutForm">
-              <input type="text" placeholder="Jūsų vardas" required />
-              <input type="email" placeholder="El. paštas" required />
-              <input type="tel" placeholder="Telefonas" required />
-              <button type="submit">Patvirtinti užsakymą</button>
-            </form>
           </div>
         </div>
       )}
       <footer className="Footer">
         <div className="FooterLinks">
-          <a href="#">Kontaktai</a>
-          <a href="#">Privatumo politika</a>
-          <a href="#">Naudojimosi taisyklės</a>
+          <a href="#" onClick={() => setInfoPage('kontaktai')}>Kontaktai</a>
+          <a href="#" onClick={() => setInfoPage('privatumas')}>Privatumo politika</a>
+          <a href="#" onClick={() => setInfoPage('taisykles')}>Naudojimosi taisyklės</a>
         </div>
         <p>&copy; Įmonės Pavadinimas</p>
       </footer>
+
+      {/* Info pages modal */}
+      {infoPage && (
+        <div className="CheckoutModal" onClick={() => setInfoPage(null)}>
+          <div className="CheckoutContent" onClick={e => e.stopPropagation()} style={{maxWidth:480, width:'95vw', maxHeight:'90vh', overflowY:'auto', padding:'2em 1.5em', borderRadius:18, background:'#fff', boxShadow:'0 4px 32px rgba(0,119,255,0.10)', position:'relative', display:'flex', flexDirection:'column', alignItems:'center'}}>
+            <button className="CloseBtn" onClick={() => setInfoPage(null)} style={{position:'absolute',top:18,right:18,fontSize:'2em',background:'none',border:'none',color:'#bbb',cursor:'pointer'}}>&times;</button>
+            {infoPage === 'apie' && (
+              <><h2>Apie mus</h2><p>Esame pramogų ir renginių organizavimo komanda, siekianti suteikti nepamirštamų įspūdžių visiems savo klientams. Mūsų tikslas – padėti žmonėms atrasti naujas veiklas, patirti nuotykių ir kurti bendrystės akimirkas.</p></>
+            )}
+            {infoPage === 'paslaugos' && (
+              <><h2>Paslaugos</h2><p>Siūlome įvairias pramogas, renginių įrangos nuomą, žaidimų vedimą, lauko ir vidaus žaidimus, šaudymo pramogas bei kitas paslaugas tiek vaikams, tiek suaugusiems.</p></>
+            )}
+            {infoPage === 'uzsakymai' && (
+              <><h2>Užsakymai</h2><p>Norėdami užsisakyti paslaugą ar rezervuoti veiklą, pasirinkite norimą žaidimą ir užpildykite rezervacijos formą. Gavę užklausą, su jumis susisieksime patvirtinti užsakymą.</p></>
+            )}
+            {infoPage === 'kontaktai' && (
+              <><h2>Kontaktai</h2><p>El. paštas: <a href="mailto:aurimav05@gmail.com">aurimav05@gmail.com</a><br />Instagram: <a href="https://instagram.com/aurimasvi" target="_blank" rel="noopener noreferrer">@aurimasvi</a><br />Facebook: <a href="https://facebook.com/aurimas.vizinis" target="_blank" rel="noopener noreferrer">Aurimas Vižinis</a></p></>
+            )}
+            {infoPage === 'privatumas' && (
+              <><h2>Privatumo politika</h2><p>Jūsų asmens duomenys yra saugūs ir naudojami tik užsakymų administravimui bei komunikacijai. Duomenys neperduodami trečiosioms šalims be jūsų sutikimo.</p></>
+            )}
+            {infoPage === 'taisykles' && (
+              <><h2>Naudojimosi taisyklės</h2><p>Naudodamiesi svetaine, sutinkate su mūsų paslaugų teikimo sąlygomis. Prašome atsakingai pateikti savo duomenis ir laikytis nurodytų rezervacijos bei dalyvavimo taisyklių.</p></>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 export default App;
+

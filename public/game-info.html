@@ -5,6 +5,103 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Žaidimo informacija</title>
   <style>
+    /* --- Copied from App.css for footer, side menu, and icons --- */
+    body {
+      background: #f9fbfd;
+      font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
+      color: #23272f;
+      margin: 0;
+      padding: 0;
+    }
+    .Footer {
+      background: #fff;
+      text-align: center;
+      padding: 2vw 0 1vw 0;
+      border-top: 1px solid #eaeaea;
+      font-size: 1em;
+      color: #888;
+      margin-top: 3vw;
+    }
+    .FooterLinks {
+      display: flex;
+      justify-content: center;
+      gap: 2vw;
+      margin-bottom: 0.5em;
+    }
+    .FooterLinks a {
+      color: #888;
+      text-decoration: none;
+      transition: color 0.18s;
+      font-size: 1em;
+      padding: 0.2em 0.6em;
+      border-radius: 6px;
+    }
+    .FooterLinks a:hover {
+      color: #0077ff;
+      background: #f0f7ff;
+    }
+    .SocialIcon {
+      width: 2.2em;
+      height: 2.2em;
+      min-width: 32px;
+      min-height: 32px;
+      max-width: 40px;
+      max-height: 40px;
+      object-fit: contain;
+      filter: grayscale(0.2) brightness(0.97);
+      transition: filter 0.18s, transform 0.18s;
+      cursor: pointer;
+      border-radius: 50%;
+      background: #f5f7fa;
+      padding: 0.2em;
+      display: inline-block;
+    }
+    .SocialIcon:hover {
+      filter: none;
+      transform: scale(1.12);
+      background: #e0e7ef;
+    }
+    .SideMenuDrawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 270px;
+      background: #fff;
+      box-shadow: 2px 0 16px rgba(0,0,0,0.08);
+      z-index: 1200;
+      transform: translateX(-110%);
+      transition: transform 0.25s;
+      display: flex;
+      flex-direction: column;
+      padding: 2em 1.2em 1em 1.2em;
+    }
+    .SideMenuDrawer.open {
+      transform: translateX(0);
+    }
+    .SideMenuOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(30,40,60,0.10);
+      z-index: 1199;
+    }
+    @media (max-width: 600px) {
+      .Footer {
+        font-size: 0.98em;
+        padding: 2vw 0 2vw 0;
+      }
+      .FooterLinks {
+        gap: 4vw;
+      }
+      .SideMenuDrawer {
+        width: 90vw;
+        min-width: 0;
+        padding: 2em 1em 1em 1em;
+      }
+    }
     body {
       font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
       background: #f9fbfd;
@@ -83,6 +180,26 @@
       font-size: 0.98em;
       margin-bottom: 1.2em;
     }
+    #reservationInfo {
+      margin-top: 1.5em;
+      padding: 1em;
+      background: #f0f7ff;
+      border-radius: 10px;
+      color: #23272f;
+      font-size: 1em;
+      text-align: left;
+    }
+    #reserveBtn {
+      background: #0077ff;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7em 2em;
+      font-size: 1em;
+      font-weight: 500;
+      cursor: pointer;
+      margin: 1em 0 0 0;
+    }
     @media (max-width: 600px) {
       .container {
         max-width: 98vw;
@@ -95,6 +212,29 @@
   </style>
 </head>
 <body>
+  <button id="menuBtn" aria-label="Atidaryti meniu" style="position:fixed;top:20px;left:20px;z-index:1100;background:#0077ff;color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:1.7em;cursor:pointer;box-shadow:0 2px 8px rgba(0,119,255,0.10);">&#9776;</button>
+  <div id="sideMenuOverlay" class="SideMenuOverlay" style="display:none;"></div>
+  <div id="sideMenuDrawer" class="SideMenuDrawer" style="display:none;">
+    <button id="closeMenuBtn" style="position:absolute;top:18px;right:18px;background:none;border:none;font-size:2em;color:#bbb;cursor:pointer;">&times;</button>
+    <div style="display:flex;align-items:center;gap:1em;margin-bottom:1.5em;">
+      <img src="/logo192.png" alt="Logo" style="width:44px;height:44px;border-radius:12px;" />
+      <span style="font-weight:600;font-size:1.2em;color:#0077ff;">Įmonės Pavadinimas</span>
+    </div>
+    <nav style="display:flex;flex-direction:column;gap:0.7em;margin-bottom:2em;">
+      <a href="/" id="mainPageLink" style="text-decoration:none;color:#23272f;font-weight:500;">Pagrindinis</a>
+      <a href="#apie" style="text-decoration:none;color:#23272f;font-weight:500;">Apie mus</a>
+      <a href="#paslaugos" style="text-decoration:none;color:#23272f;font-weight:500;">Paslaugos</a>
+      <a href="#uzsakymai" style="text-decoration:none;color:#23272f;font-weight:500;">Užsakymai</a>
+    </nav>
+    <div style="display:flex;gap:0.7em;margin-bottom:2em;">
+      <a href="https://instagram.com/aurimasvi" target="_blank" rel="noopener"><img src="/icons/instagram.png" alt="Instagram" class="SocialIcon" /></a>
+      <a href="https://facebook.com/aurimas.vizinis" target="_blank" rel="noopener"><img src="/icons/facebook.png" alt="Facebook" class="SocialIcon" /></a>
+      <a href="https://mail.google.com/mail/?view=cm&to=aurimav05@gmail.com" target="_blank" rel="noopener"><img src="/icons/mail.png" alt="Gmail" class="SocialIcon" /></a>
+    </div>
+    <div style="border-top:1px solid #f2f4f8;margin:1em 0;"></div>
+    <div style="font-weight:600;margin-bottom:0.7em;color:#23272f;">Kategorijos</div>
+    <div id="sideMenuCategories" style="display:flex;flex-direction:column;gap:0.5em;"></div>
+  </div>
   <div class="container">
     <h1 id="gameName"></h1>
     <div class="category" id="gameCategory"></div>
@@ -106,35 +246,178 @@
     <div class="price" id="gamePrice"></div>
     <div class="desc" id="gameDesc"></div>
     <div class="info" id="gameInfo"></div>
+    <button id="reserveBtn" style="background:#0077ff;color:#fff;border:none;border-radius:8px;padding:0.7em 2em;font-size:1em;font-weight:500;cursor:pointer;margin:1em 0 0 0;">Rezervuoti</button>
+    <div id="reservationInfo" style="margin-top:1.5em;padding:1em;background:#f0f7ff;border-radius:10px;color:#23272f;font-size:1em;text-align:left;">
+      <b>Kaip veikia rezervacija?</b><br>
+      1. Pasirinkite datą ir laiką.<br>
+      2. Užpildykite savo kontaktinius duomenis.<br>
+      3. Gavę rezervacijos patvirtinimą el. paštu, atvykite į pasirinktą vietą nurodytu laiku.<br>
+      4. Jei turite klausimų, susisiekite su mumis!<br>
+      <br>
+      <b>Kainos:</b> <span id="reservationPrice"></span><br>
+      <b>Informacija apie veiklą:</b> <span id="reservationGameInfo"></span>
+    </div>
+  </div>
+  <footer class="Footer">
+    <div class="FooterLinks">
+      <a href="#kontaktai">Kontaktai</a>
+      <a href="#privatumas">Privatumo politika</a>
+      <a href="#taisykles">Naudojimosi taisyklės</a>
+    </div>
+    <p>&copy; Įmonės Pavadinimas</p>
+  </footer>
+  <div id="infoModal" style="display:none;position:fixed;z-index:2000;inset:0;background:rgba(30,40,60,0.18);align-items:center;justify-content:center;">
+    <div id="infoContent" style="background:#fff;border-radius:18px;box-shadow:0 8px 32px rgba(0,119,255,0.10);padding:2.5vw 5vw;max-width:95vw;width:350px;position:relative;text-align:center;display:flex;flex-direction:column;align-items:center;">
+      <button id="closeInfoModal" style="position:absolute;top:1em;right:1em;background:none;border:none;font-size:2em;color:#bbb;cursor:pointer;">&times;</button>
+      <div id="infoBody"></div>
+    </div>
   </div>
   <script>
-    // Get game data from localStorage
-    const game = JSON.parse(localStorage.getItem('selectedGame'));
-    if (!game) {
-      document.querySelector('.container').innerHTML = '<p>Žaidimo informacija nerasta.</p>';
-    } else {
-      document.getElementById('gameName').textContent = game.name;
-      document.getElementById('gameCategory').textContent = game.category || '';
-      document.getElementById('gamePrice').textContent = 'Kaina: ' + (game.price || '');
-      document.getElementById('gameDesc').textContent = game.description || '';
-      document.getElementById('gameInfo').textContent = game.info || '';
-      // Slidable photos (use array if available, else fallback to single image)
-      let images = Array.isArray(game.images) && game.images.length ? game.images : [game.image];
-      let current = 0;
-      const sliderImg = document.getElementById('sliderImg');
-      function showImg(idx) {
-        sliderImg.src = images[idx];
-      }
-      showImg(current);
-      document.getElementById('prevBtn').onclick = function() {
-        current = (current - 1 + images.length) % images.length;
+    // Fetch activities from backend and render selected game
+    const selectedGameId = localStorage.getItem('selectedGameId');
+    fetch('http://localhost:4000/api/activities')
+      .then(res => res.json())
+      .then(data => {
+        let game = null;
+        if (selectedGameId) {
+          game = data.find(g => g._id === selectedGameId);
+        }
+        if (!game) {
+          document.querySelector('.container').innerHTML = '<p>Žaidimo informacija nerasta.</p>';
+          return;
+        }
+        document.getElementById('gameName').textContent = game.name;
+        document.getElementById('gameCategory').textContent = game.category || '';
+        document.getElementById('gamePrice').textContent = 'Kaina: ' + (game.price || '');
+        document.getElementById('gameDesc').textContent = game.description || '';
+        document.getElementById('gameInfo').textContent = game.info || '';
+        document.getElementById('reservationPrice').textContent = game.price || '';
+        document.getElementById('reservationGameInfo').textContent = game.info || '';
+        // Slidable photos (use array if available, else fallback to single image)
+        let images = Array.isArray(game.images) && game.images.length ? game.images : (game.image ? [game.image] : []);
+        let current = 0;
+        const sliderImg = document.getElementById('sliderImg');
+        function showImg(idx) {
+          if (images.length > 0) {
+            sliderImg.src = images[idx];
+            sliderImg.style.display = '';
+          } else {
+            sliderImg.src = '';
+            sliderImg.style.display = 'none';
+          }
+        }
         showImg(current);
-      };
-      document.getElementById('nextBtn').onclick = function() {
-        current = (current + 1) % images.length;
-        showImg(current);
-      };
+        document.getElementById('prevBtn').onclick = function() {
+          if (images.length > 0) {
+            current = (current - 1 + images.length) % images.length;
+            showImg(current);
+          }
+        };
+        document.getElementById('nextBtn').onclick = function() {
+          if (images.length > 0) {
+            current = (current + 1) % images.length;
+            showImg(current);
+          }
+        };
+        document.getElementById('reserveBtn').onclick = function() {
+          // Show reservation form/modal (implement as needed)
+          // Example: POST to backend
+          const name = prompt('Jūsų vardas:');
+          const email = prompt('El. paštas:');
+          const phone = prompt('Telefonas:');
+          const date = prompt('Data (YYYY-MM-DD):');
+          const time = prompt('Laikas (HH:MM):');
+          if (!name || !email || !phone || !date || !time) return;
+          fetch('http://localhost:4000/api/reservations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              activityId: game._id,
+              name, email, phone, date, time
+            })
+          })
+            .then(res => res.json())
+            .then(() => alert('Rezervacija sėkmingai pateikta!'));
+        };
+      });
+    document.getElementById('menuBtn').onclick = function() {
+      document.getElementById('sideMenuDrawer').style.display = 'flex';
+      setTimeout(function() {
+        document.getElementById('sideMenuDrawer').style.transform = 'translateX(0)';
+        document.getElementById('sideMenuOverlay').style.display = 'block';
+      }, 10);
+    };
+    document.getElementById('closeMenuBtn').onclick = function() {
+      document.getElementById('sideMenuDrawer').style.transform = 'translateX(-110%)';
+      setTimeout(function() {
+        document.getElementById('sideMenuDrawer').style.display = 'none';
+        document.getElementById('sideMenuOverlay').style.display = 'none';
+      }, 250);
+    };
+    document.getElementById('sideMenuOverlay').onclick = function() {
+      document.getElementById('closeMenuBtn').onclick();
+    };
+    // Render categories in side menu
+    function renderSideMenuCategories() {
+      var cats = JSON.parse(localStorage.getItem('categories') || '[]');
+      var out = '';
+      cats.forEach(function(cat) {
+        out += `<a href="#${cat.key}" class="sideMenuCatLink" data-cat="${cat.key}" style="display:flex;align-items:center;gap:0.7em;text-decoration:none;color:#0077ff;font-weight:500;padding:0.4em 0;border-radius:8px;"><img src="${cat.icon || 'logo192.png'}" alt="${cat.name}" style="width:32px;height:32px;border-radius:8px;object-fit:contain;background:#f8fafc;" /><span>${cat.name}</span></a>`;
+      });
+      document.getElementById('sideMenuCategories').innerHTML = out;
+      // Add click listeners for category links to redirect and scroll
+      Array.from(document.querySelectorAll('.sideMenuCatLink')).forEach(function(link) {
+        link.onclick = function(e) {
+          e.preventDefault();
+          var catKey = link.getAttribute('data-cat');
+          localStorage.setItem('scrollToCategory', catKey);
+          window.location.href = '/';
+        };
+      });
     }
+    renderSideMenuCategories();
+    const infoContent = {
+      apie: {title: 'Apie mus', body: '<p>Esame pramogų ir renginių organizavimo komanda, siekianti suteikti nepamirštamų įspūdžių visiems savo klientams. Mūsų tikslas – padėti žmonėms atrasti naujas veiklas, patirti nuotykių ir kurti bendrystės akimirkas.</p>'},
+      paslaugos: {title: 'Paslaugos', body: '<p>Siūlome įvairias pramogas, renginių įrangos nuomą, žaidimų vedimą, lauko ir vidaus žaidimus, šaudymo pramogas bei kitas paslaugas tiek vaikams, tiek suaugusiems.</p>'},
+      uzsakymai: {title: 'Užsakymai', body: '<p>Norėdami užsisakyti paslaugą ar rezervuoti veiklą, pasirinkite norimą žaidimą ir užpildykite rezervacijos formą. Gavę užklausą, su jumis susisieksime patvirtinti užsakymą.</p>'},
+      kontaktai: {title: 'Kontaktai', body: '<p>El. paštas: <a href="mailto:aurimav05@gmail.com">aurimav05@gmail.com</a><br>Instagram: <a href="https://instagram.com/aurimasvi" target="_blank" rel="noopener">@aurimasvi</a><br>Facebook: <a href="https://facebook.com/aurimas.vizinis" target="_blank" rel="noopener">Aurimas Vižinis</a></p>'},
+      privatumas: {title: 'Privatumo politika', body: '<p>Jūsų asmens duomenys yra saugūs ir naudojami tik užsakymų administravimui bei komunikacijai. Duomenys neperduodami trečiosioms šalims be jūsų sutikimo.</p>'},
+      taisykles: {title: 'Naudojimosi taisyklės', body: '<p>Naudodamiesi svetaine, sutinkate su mūsų paslaugų teikimo sąlygomis. Prašome atsakingai pateikti savo duomenis ir laikytis nurodytų rezervacijos bei dalyvavimo taisyklių.</p>'}
+    };
+    function openInfoModal(key) {
+      document.getElementById('infoBody').innerHTML = `<h2 style='color:#0077ff;font-weight:700;margin-bottom:0.7em;'>${infoContent[key].title}</h2>${infoContent[key].body}`;
+      document.getElementById('infoModal').style.display = 'flex';
+    }
+    document.getElementById('closeInfoModal').onclick = function() {
+      document.getElementById('infoModal').style.display = 'none';
+    };
+    // Add listeners to side menu and footer links:
+    ['apie','paslaugos','uzsakymai','kontaktai','privatumas','taisykles'].forEach(function(key) {
+      const link = document.querySelector(`a[href="#${key}"]`);
+      if (link) {
+        link.onclick = function(e) {
+          e.preventDefault();
+          openInfoModal(key);
+          if(document.getElementById('sideMenuDrawer')) document.getElementById('sideMenuDrawer').style.display = 'none';
+          if(document.getElementById('sideMenuOverlay')) document.getElementById('sideMenuOverlay').style.display = 'none';
+        };
+      }
+    });
+    // Add listeners for footer links as well
+    ['kontaktai','privatumas','taisykles'].forEach(function(key) {
+      const link = document.querySelector(`.FooterLinks a[href="#${key}"]`);
+      if (link) {
+        link.onclick = function(e) {
+          e.preventDefault();
+          openInfoModal(key);
+        };
+      }
+    });
+    // Side menu open/close logic (unchanged)
+    document.getElementById('mainPageLink').onclick = function(e) {
+      e.preventDefault();
+      window.location.href = '/';
+    };
   </script>
 </body>
 </html>

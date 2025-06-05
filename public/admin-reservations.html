@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Rezervacijos</title>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f7faff; margin: 0; padding: 0; }
+    .container { max-width: 900px; margin: 2em auto; background: #fff; border-radius: 18px; box-shadow: 0 2px 16px rgba(0,119,255,0.08); padding: 2em; }
+    h1 { color: #0077ff; margin-bottom: 1.2em; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 2em; }
+    th, td { padding: 0.7em 1em; border-bottom: 1px solid #eaf3ff; text-align: left; }
+    th { background: #eaf3ff; color: #0077ff; font-weight: 700; }
+    tr:last-child td { border-bottom: none; }
+    .countBox { background: linear-gradient(90deg,#e0f7fa 60%,#ffe6fa 100%); border-radius: 12px; padding: 1em 2em; margin-bottom: 2em; display: flex; gap: 2em; align-items: center; }
+    .countBox span { font-size: 1.2em; font-weight: 600; color: #0077ff; }
+    .categoryCount { color: #ff6fb7; font-weight: 700; }
+    .no-res { color: #bbb; font-style: italic; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Rezervacijų peržiūra</h1>
+    <div class="countBox">
+      <span id="totalRes">Iš viso rezervacijų: 0</span>
+      <span id="activityCount" class="categoryCount">Aktyvių veiklų: 0</span>
+    </div>
+    <table id="resTable">
+      <thead>
+        <tr>
+          <th>Veikla</th>
+          <th>Kategorija</th>
+          <th>Vardas</th>
+          <th>El. paštas</th>
+          <th>Telefonas</th>
+          <th>Data</th>
+          <th>Laikas</th>
+          <th>Pateikta</th>
+          <th>Veiksmai</th>
+        </tr>
+      </thead>
+      <tbody id="resBody">
+        <tr><td colspan="9" class="no-res">Nėra rezervacijų</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <script>
+    // --- Admin authentication check ---
+    if (!localStorage.getItem('admin_logged_in')) {
+      window.location.href = '/admin-secret.html';
+    }
+    function formatDateTime(dt) {
+      const d = new Date(dt);
+      return d.toLocaleString('lt-LT', { dateStyle: 'short', timeStyle: 'short' });
+    }
+    function loadReservations() {
+      const res = JSON.parse(localStorage.getItem('reservations') || '[]');
+      const categories = JSON.parse(localStorage.getItem('categories') || '[]');
+      document.getElementById('totalRes').textContent = 'Iš viso rezervacijų: ' + res.length;
+      document.getElementById('activityCount').textContent = 'Aktyvių veiklų: ' + (categories.length || 0);
+      const tbody = document.getElementById('resBody');
+      tbody.innerHTML = '';
+      if (res.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="no-res">Nėra rezervacijų</td></tr>';
+        return;
+      }
+      res.slice().reverse().forEach((r, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r.game?.name || ''}</td>
+          <td>${r.game?.category || ''}</td>
+          <td>${r.name}</td>
+          <td>${r.email}</td>
+          <td>${r.phone}</td>
+          <td>${r.date}</td>
+          <td>${r.time}</td>
+          <td>${formatDateTime(r.created)}</td>
+          <td><button onclick="deleteReservation(${res.length-1-idx})" style='color:#d32f2f;font-weight:600;'>Ištrinti</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    function deleteReservation(idx) {
+      const res = JSON.parse(localStorage.getItem('reservations') || '[]');
+      if (!confirm('Ar tikrai norite ištrinti šią rezervaciją?')) return;
+      res.splice(idx, 1);
+      localStorage.setItem('reservations', JSON.stringify(res));
+      loadReservations();
+    }
+    // Listen for reservation changes in real time (including from other tabs)
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'reservations') {
+        loadReservations();
+      }
+    });
+    window.addEventListener('DOMContentLoaded', loadReservations);
+    window.deleteReservation = deleteReservation;
+    </script>
+</body>
+</html>

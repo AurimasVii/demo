@@ -347,3 +347,26 @@ body, .App {
     margin-top: 2vw;
   }
 }
+
+/* Make activity images larger and adjust GameCard layout for desktop and mobile */
+.GameCard img {
+  width: 96px;
+  height: 96px;
+  border-radius: 14px;
+  object-fit: cover;
+  box-shadow: 0 2px 12px #eaf3ff;
+}
+.GameCard {
+  gap: 1.5em;
+  padding: 1em 0;
+}
+@media (max-width: 600px) {
+  .GameCard img {
+    width: 64px;
+    height: 64px;
+  }
+  .GameCard {
+    gap: 1em;
+    padding: 0.7em 0;
+  }
+}
