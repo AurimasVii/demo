@@ -438,6 +438,7 @@
           var catKey = link.getAttribute('data-cat');
           // Save to localStorage for main page scroll
           localStorage.setItem('scrollToCategory', catKey);
+          localStorage.setItem('scrollSmooth', '1');
           window.location.href = '/#' + catKey;
         };
       });
