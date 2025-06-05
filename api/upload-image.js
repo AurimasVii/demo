@@ -19,7 +19,10 @@ export default async function handler(req, res) {
     if (err) return res.status(500).json({ error: 'Upload failed' });
     const file = files.file;
     if (!file) return res.status(400).json({ error: 'No file uploaded' });
-    const fileName = Date.now() + '-' + file.originalFilename.replace(/[^a-zA-Z0-9.\-_]/g, '');
+    // Use a fallback filename if originalFilename is missing
+    let origName = file.originalFilename || 'upload';
+    origName = String(origName).replace(/[^a-zA-Z0-9.\-_]/g, '');
+    const fileName = Date.now() + '-' + origName;
     const destPath = path.join(form.uploadDir, fileName);
     fs.renameSync(file.filepath, destPath);
     // Return the public URL
