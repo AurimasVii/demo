@@ -395,7 +395,11 @@ function App() {
                   display: 'block'
                 }}
                 onClick={() => {
-                  localStorage.setItem('selectedGame', JSON.stringify(checkoutGame));
+                  if (checkoutGame && checkoutGame._id) {
+                    localStorage.setItem('selectedGameId', checkoutGame._id);
+                  } else if (checkoutGame && checkoutGame.name) {
+                    localStorage.setItem('selectedGameId', checkoutGame.name);
+                  }
                   window.location.href = '/game-info.html';
                 }}
               >Daugiau informacijos</button>

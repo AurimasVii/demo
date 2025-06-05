@@ -1,0 +1,28 @@
+import formidable from 'formidable';
+import fs from 'fs';
+import path from 'path';
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') return res.status(405).end();
+  const form = new formidable.IncomingForm();
+  form.uploadDir = path.join(process.cwd(), 'public', 'icons');
+  form.keepExtensions = true;
+  form.maxFileSize = 5 * 1024 * 1024; // 5MB
+
+  form.parse(req, (err, fields, files) => {
+    if (err) return res.status(500).json({ error: 'Upload failed' });
+    const file = files.file;
+    if (!file) return res.status(400).json({ error: 'No file uploaded' });
+    const fileName = Date.now() + '-' + file.originalFilename.replace(/[^a-zA-Z0-9.\-_]/g, '');
+    const destPath = path.join(form.uploadDir, fileName);
+    fs.renameSync(file.filepath, destPath);
+    // Return the public URL
+    res.status(200).json({ url: '/icons/' + fileName });
+  });
+}
