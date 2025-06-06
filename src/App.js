@@ -292,6 +292,13 @@ function App() {
     return '/icons/confetti.png'; // fallback
   }
 
+  // Helper: get icon for category (fallback to confetti)
+  function getCategoryIcon(catKey) {
+    const iconPath = `/icons/${catKey}.png`;
+    // Check if icon exists by preloading (optional, fallback to confetti)
+    return iconPath;
+  }
+
   return (
     <div className="App">
       {/* Side Menu Toggle Button */}
@@ -339,7 +346,7 @@ function App() {
               style={{display:'flex',alignItems:'center',gap:'0.7em',textDecoration:'none',color:'#0077ff',fontWeight:500,padding:'0.4em 0',borderRadius:'8px'}}
               onClick={() => setSideMenuOpen(false)}
             >
-              <img src={cat.icon || '/icons/confetti.png'} alt={cat.name} style={{width:32,height:32,borderRadius:8,objectFit:'contain',background:'#f8fafc'}} />
+              <img src={getCategoryIcon(cat.key)} alt={cat.name} style={{width:32,height:32,borderRadius:8,objectFit:'contain',background:'#f8fafc'}} />
               <span>{cat.name}</span>
             </a>
           ))}
@@ -381,13 +388,16 @@ function App() {
         <p>Pasirinkite iš įvairių pramogų paslaugų, kurias siūlome:</p>
         {categories.map(cat => (
           <section key={cat.key} id={cat.key}>
-            <h3>{cat.name}</h3>
-            <ul className="GamesList">
+            <div style={{display:'flex',alignItems:'center',gap:'0.7em',marginBottom:'1em'}}>
+              <img src={getCategoryIcon(cat.key)} alt={cat.name} style={{width:36,height:36,borderRadius:8,objectFit:'contain',background:'#f8fafc'}} />
+              <h3 style={{margin:0}}>{cat.name}</h3>
+            </div>
+            <ul className="GamesList" style={{justifyContent:'center'}}>
               {cat.games.map(game => (
-                <li key={game._id || game.name} className="GameCard">
-                  <img src={getActivityImage(game)} alt={game.name} style={{width: '100%', maxWidth: 120, maxHeight: 120, borderRadius: 12, objectFit: 'cover', marginBottom: 8}} />
-                  <div style={{fontWeight:600,marginBottom:4}}>{game.name}</div>
-                  <div style={{color:'#0077ff',fontWeight:500,marginBottom:4}}>{game.price}</div>
+                <li key={game._id || game.name} className="GameCard" style={{maxWidth:340,margin:'0 auto',background:'#fff',borderRadius:18,boxShadow:'0 2px 18px rgba(0,0,0,0.04)',padding:'2vw 5vw 2vw 5vw',textAlign:'center',display:'flex',flexDirection:'column',alignItems:'center'}}>
+                  <img src={game.mainImage || (game.images && game.images[0]) || '/icons/confetti.png'} alt={game.name} style={{width:'100%',maxWidth:220,maxHeight:180,borderRadius:12,objectFit:'cover',marginBottom:12,boxShadow:'0 2px 8px rgba(0,119,255,0.07)'}} />
+                  <div style={{fontWeight:600,marginBottom:4,fontSize:'1.15em'}}>{game.name}</div>
+                  <div style={{color:'#0077ff',fontWeight:500,marginBottom:8,fontSize:'1.08em'}}>{game.price}</div>
                   <button onClick={() => setInfoModalGame(game)} style={{background:'#eaf3ff',color:'#0077ff',border:'none',borderRadius:'8px',padding:'0.5em 1.2em',fontWeight:500,cursor:'pointer',marginBottom:'0.5em'}}>Daugiau informacijos</button>
                   <button onClick={() => setCheckoutGame(game)} style={{background:'#0077ff',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5em 1.2em',fontWeight:500,cursor:'pointer'}}>Rezervuoti</button>
                 </li>
@@ -398,20 +408,14 @@ function App() {
         <p>Susisiekite su mumis dėl daugiau informacijos ir užsakymų.</p>
       </main>
 
-      {/* Info Modal: show all images and full info */}
+      {/* Info Modal: show all images and full info, with image slider */}
       {infoModalGame && (
         <div className="CheckoutModal" onClick={() => setInfoModalGame(null)}>
-          <div className="CheckoutContent" onClick={e => e.stopPropagation()} style={{maxWidth:520, width:'95vw', maxHeight:'90vh', overflowY:'auto', padding:'2em 1.5em', borderRadius:18, background:'#fff', boxShadow:'0 4px 32px rgba(0,119,255,0.10)', position:'relative', display:'flex', flexDirection:'column', alignItems:'center'}}>
+          <div className="CheckoutContent" onClick={e => e.stopPropagation()} style={{maxWidth:420, width:'95vw', maxHeight:'90vh', overflowY:'auto', padding:'2em 1.5em', borderRadius:18, background:'#fff', boxShadow:'0 4px 32px rgba(0,119,255,0.10)', position:'relative', display:'flex', flexDirection:'column', alignItems:'center'}}>
             <button className="CloseBtn" onClick={() => setInfoModalGame(null)} style={{position:'absolute',top:18,right:18,fontSize:'2em',background:'none',border:'none',color:'#bbb',cursor:'pointer'}}>&times;</button>
             <h2 style={{marginTop:0, color:'#0077ff', fontSize:'1.3em'}}>{infoModalGame.name}</h2>
             {/* Image slider for all images */}
-            {infoModalGame.images && infoModalGame.images.length > 0 && (
-              <div style={{display:'flex',gap:'0.5em',flexWrap:'wrap',justifyContent:'center',marginBottom:'1em'}}>
-                {infoModalGame.images.map((img, idx) => (
-                  <img key={idx} src={img} alt={infoModalGame.name+idx} style={{width:90,height:90,borderRadius:10,objectFit:'cover',boxShadow:'0 2px 8px rgba(0,119,255,0.07)'}} />
-                ))}
-              </div>
-            )}
+            <ImageSlider images={infoModalGame.images || []} name={infoModalGame.name} />
             <div style={{color:'#0077ff',fontWeight:500,marginBottom:8}}>{infoModalGame.price}</div>
             <div style={{fontSize:'1.08em',color:'#23272f',marginBottom:8}}>{infoModalGame.description}</div>
             <div style={{fontSize:'0.98em',color:'#555',marginBottom:8}}>{infoModalGame.info}</div>
@@ -455,6 +459,21 @@ function App() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// --- ImageSlider component for info modal ---
+function ImageSlider({ images, name }) {
+  const [idx, setIdx] = React.useState(0);
+  if (!images || images.length === 0) return null;
+  function prev() { setIdx(i => (i - 1 + images.length) % images.length); }
+  function next() { setIdx(i => (i + 1) % images.length); }
+  return (
+    <div style={{position:'relative',width:'100%',maxWidth:320,margin:'0 auto 1.5em auto',overflow:'hidden',borderRadius:12,background:'#f8fafc',boxShadow:'0 2px 8px rgba(0,119,255,0.04)'}}>
+      <button onClick={prev} aria-label="Ankstesnė nuotrauka" style={{position:'absolute',top:'50%',left:8,transform:'translateY(-50%)',background:'rgba(0,119,255,0.7)',color:'#fff',border:'none',borderRadius:'50%',width:36,height:36,fontSize:'1.5em',cursor:'pointer',zIndex:2}}>&#8592;</button>
+      <img src={images[idx]} alt={name+idx} style={{width:'100%',height:180,objectFit:'cover',borderRadius:12,display:'block'}} />
+      <button onClick={next} aria-label="Kita nuotrauka" style={{position:'absolute',top:'50%',right:8,transform:'translateY(-50%)',background:'rgba(0,119,255,0.7)',color:'#fff',border:'none',borderRadius:'50%',width:36,height:36,fontSize:'1.5em',cursor:'pointer',zIndex:2}}>&#8594;</button>
     </div>
   );
 }
