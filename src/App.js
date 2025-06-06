@@ -189,6 +189,16 @@ function setCategories(newCategories) {
   localStorage.setItem('categories', JSON.stringify(newCategories));
 }
 
+// Helper: map category key to icon filename
+const categoryIconMap = {
+  swimming: '/icons/swimming.png',
+  tools: '/icons/tools.png',
+  entertainment: '/icons/confetti.png',
+  outside: '/icons/park.png',
+  inside: '/icons/cinema.png',
+  shooting: '/icons/shooting-range.png',
+};
+
 function App() {
   const [categories, setCategories] = useState([]);
   const [activities, setActivities] = useState([]);
@@ -336,7 +346,12 @@ function App() {
               style={{display:'flex',alignItems:'center',gap:'0.7em',textDecoration:'none',color:'#0077ff',fontWeight:500,padding:'0.4em 0',borderRadius:'8px'}}
               onClick={() => setSideMenuOpen(false)}
             >
-              <img src={cat.icon} alt={cat.name} style={{width:32,height:32,borderRadius:8,objectFit:'contain',background:'#f8fafc'}} />
+              <img
+                src={categoryIconMap[cat.key] || '/icons/confetti.png'}
+                alt={cat.name}
+                style={{width:32,height:32,borderRadius:8,objectFit:'contain',background:'#f8fafc'}}
+                onError={e => { e.target.onerror = null; e.target.src = '/icons/confetti.png'; }}
+              />
               <span>{cat.name}</span>
             </a>
           ))}
@@ -366,7 +381,12 @@ function App() {
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
             <div>
-              <img src={cat.icon} alt={cat.name} className='SwimIcon'/>
+              <img
+                src={categoryIconMap[cat.key] || '/icons/confetti.png'}
+                alt={cat.name}
+                className='SwimIcon'
+                onError={e => { e.target.onerror = null; e.target.src = '/icons/confetti.png'; }}
+              />
               <p>{cat.name}</p>
             </div>
           </a>
@@ -395,7 +415,6 @@ function App() {
                     <img src={mainImg} alt={game.name} style={{ width: 96, height: 96, borderRadius: 14, objectFit: 'cover', boxShadow: '0 2px 12px #eaf3ff' }} />
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600, color: '#23272f', fontSize: '1.15em', marginBottom: '0.3em' }}>{game.name}</div>
-                      <div style={{ fontSize: '1em', color: '#555', marginBottom: '0.3em' }}>{game.description}</div>
                       <div style={{ color: '#0077ff', fontWeight: 600 }}>{game.price}</div>
                     </div>
                   </li>
