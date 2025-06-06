@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const uri = process.env.MONGO_URI;
 
 const ActivitySchema = new mongoose.Schema({
-  name: String, description: String, images: [String], price: String, info: String, category: String
+  name: String, description: String, images: [String], price: String, info: String, category: String, mainImage: String
 });
 const Activity = mongoose.models.Activity || mongoose.model('Activity', ActivitySchema);
 

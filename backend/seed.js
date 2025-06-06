@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 
 const Activity = mongoose.model('Activity', new mongoose.Schema({
-  name: String, description: String, images: [String], price: String, info: String, category: String
+  name: String, description: String, images: [String], price: String, info: String, category: String, mainImage: String
 }));
 
 const defaultCategories = [
@@ -201,7 +201,7 @@ async function seed() {
   let all = [];
   for (const cat of defaultCategories) {
     for (const game of cat.games) {
-      all.push({ ...game, category: cat.name });
+      all.push({ ...game, category: cat.name, mainImage: game.images && game.images.length > 0 ? game.images[0] : '' });
     }
   }
   await Activity.insertMany(all);
