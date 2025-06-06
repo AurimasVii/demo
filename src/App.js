@@ -366,7 +366,7 @@ function App() {
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
             <div>
-              <img src={cat.icon || `/icons/confetti.png`} alt={cat.name} className='SwimIcon' onError={e => { e.target.onerror = null; e.target.src = '/icons/confetti.png'; }} />
+              <img src={cat.icon} alt={cat.name} className='SwimIcon'/>
               <p>{cat.name}</p>
             </div>
           </a>
