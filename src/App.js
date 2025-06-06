@@ -192,11 +192,17 @@ function setCategories(newCategories) {
 // Helper: map category key to icon filename
 const categoryIconMap = {
   swimming: '/icons/swimming.png',
+  vandenspramogos: '/icons/swimming.png',
   tools: '/icons/tools.png',
+  renginiuirangosnuoma: '/icons/tools.png',
   entertainment: '/icons/confetti.png',
+  pramoguvedimas: '/icons/confetti.png',
   outside: '/icons/park.png',
+  laukozaidimai: '/icons/park.png',
   inside: '/icons/cinema.png',
+  vidauspramogos: '/icons/cinema.png',
   shooting: '/icons/shooting-range.png',
+  saudymopramogos: '/icons/shooting-range.png',
 };
 
 function App() {
@@ -339,22 +345,25 @@ function App() {
         <div style={{borderTop:'1px solid #f2f4f8',margin:'1em 0'}}></div>
         <div style={{fontWeight:600,marginBottom:'0.7em',color:'#23272f'}}>Kategorijos</div>
         <div style={{display:'flex',flexDirection:'column',gap:'0.5em'}}>
-          {categories.map(cat => (
-            <a
-              key={cat.key}
-              href={`#${cat.key}`}
-              style={{display:'flex',alignItems:'center',gap:'0.7em',textDecoration:'none',color:'#0077ff',fontWeight:500,padding:'0.4em 0',borderRadius:'8px'}}
-              onClick={() => setSideMenuOpen(false)}
-            >
-              <img
-                src={categoryIconMap[cat.key] || '/icons/confetti.png'}
-                alt={cat.name}
-                style={{width:32,height:32,borderRadius:8,objectFit:'contain',background:'#f8fafc'}}
-                onError={e => { e.target.onerror = null; e.target.src = '/icons/confetti.png'; }}
-              />
-              <span>{cat.name}</span>
-            </a>
-          ))}
+          {categories.map(cat => {
+            const iconSrc = categoryIconMap[cat.key] || categoryIconMap[cat.key.replace(/\s/g, '').toLowerCase()] || '/icons/confetti.png';
+            return (
+              <a
+                key={cat.key}
+                href={`#${cat.key}`}
+                style={{display:'flex',alignItems:'center',gap:'0.7em',textDecoration:'none',color:'#0077ff',fontWeight:500,padding:'0.4em 0',borderRadius:'8px'}}
+                onClick={() => setSideMenuOpen(false)}
+              >
+                <img
+                  src={iconSrc}
+                  alt={cat.name}
+                  style={{width:32,height:32,borderRadius:8,objectFit:'contain',background:'#f8fafc'}}
+                  onError={e => { e.target.onerror = null; e.target.src = '/icons/confetti.png'; }}
+                />
+                <span>{cat.name}</span>
+              </a>
+            );
+          })}
         </div>
       </div>
       {/* Overlay for side menu */}
@@ -373,24 +382,28 @@ function App() {
 
       {/* Category links at the top of the main screen */}
       <section className="Activities">
-        {categories.map(cat => (
-          <a
-            key={cat.key}
-            href={`#${cat.key}`}
-            className="ActivityLink"
-            style={{ textDecoration: 'none', color: 'inherit' }}
-          >
-            <div>
-              <img
-                src={categoryIconMap[cat.key] || '/icons/confetti.png'}
-                alt={cat.name}
-                className='SwimIcon'
-                onError={e => { e.target.onerror = null; e.target.src = '/icons/confetti.png'; }}
-              />
-              <p>{cat.name}</p>
-            </div>
-          </a>
-        ))}
+        {categories.map(cat => {
+          // Try both key and normalized key for icon
+          const iconSrc = categoryIconMap[cat.key] || categoryIconMap[cat.key.replace(/\s/g, '').toLowerCase()] || '/icons/confetti.png';
+          return (
+            <a
+              key={cat.key}
+              href={`#${cat.key}`}
+              className="ActivityLink"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              <div>
+                <img
+                  src={iconSrc}
+                  alt={cat.name}
+                  className='SwimIcon'
+                  onError={e => { e.target.onerror = null; e.target.src = '/icons/confetti.png'; }}
+                />
+                <p>{cat.name}</p>
+              </div>
+            </a>
+          );
+        })}
       </section>
 
       <main className="MainContent">

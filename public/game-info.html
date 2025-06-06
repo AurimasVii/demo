@@ -336,10 +336,19 @@
       // Render image slider (show mainImage or first image)
       const slider = document.getElementById('slider');
       slider.innerHTML = '';
-      let images = (activity.images && activity.images.length) ? activity.images : (activity.mainImage ? [activity.mainImage] : []);
+      // Prefer images from localStorage if present (from React)
+      let images = [];
+      try {
+        const storedImages = localStorage.getItem('selectedGameImages');
+        if (storedImages) images = JSON.parse(storedImages);
+      } catch {}
+      if (!images || !images.length) {
+        images = (activity.images && activity.images.length) ? activity.images : (activity.mainImage ? [activity.mainImage] : []);
+      }
       if (images.length > 0) {
         let idx = 0;
         const img = document.createElement('img');
+        img.id = 'sliderImg';
         img.src = images[0];
         img.alt = activity.name;
         img.style.maxWidth = '100%';
@@ -348,7 +357,7 @@
         img.style.objectFit = 'cover';
         img.style.boxShadow = '0 2px 12px rgba(0,119,255,0.07)';
         slider.appendChild(img);
-        // If multiple images, add simple left/right buttons
+        // If multiple images, add left/right buttons
         if (images.length > 1) {
           const leftBtn = document.createElement('button');
           leftBtn.textContent = '<';
