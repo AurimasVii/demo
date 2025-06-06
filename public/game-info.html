@@ -485,6 +485,22 @@
       e.preventDefault();
       window.location.href = '/';
     };
+    // Smooth redirect to main page and scroll to category
+    function goToCategory(catKey) {
+      localStorage.setItem('scrollToCategory', catKey);
+      localStorage.setItem('scrollSmooth', '1');
+      window.location.href = '/index.html';
+    }
+    // Example: attach to category links in side menu
+    document.addEventListener('DOMContentLoaded', function() {
+      const catLinks = document.querySelectorAll('[data-category-key]');
+      catLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          goToCategory(this.getAttribute('data-category-key'));
+        });
+      });
+    });
   </script>
 </body>
 </html>

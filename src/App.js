@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
@@ -188,8 +188,24 @@ function App() {
   const [checkoutGame, setCheckoutGame] = useState(null);
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [infoPage, setInfoPage] = useState(null);
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Fetch activities from backend on mount
+  useEffect(() => {
+    fetchActivities();
+  }, []);
+
+  // Function to fetch activities from backend
+  const fetchActivities = async () => {
+    setLoading(true);
+    const res = await fetch('/api/activities');
+    const data = await res.json();
+    setActivities(data);
+    setLoading(false);
+  };
+
+  // Ensure activities are always fetched from backend
   useEffect(() => {
     fetch('/api/activities')
       .then(res => res.json())
@@ -230,6 +246,7 @@ function App() {
       .then(() => {
         alert('Rezervacija sėkmingai pateikta!');
         setCheckoutGame(null);
+        fetchActivities(); // Refetch activities after reservation
       });
   }
 
