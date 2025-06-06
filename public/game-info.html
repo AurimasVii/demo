@@ -260,8 +260,6 @@
   </footer>
   <div id="infoModal" style="display:none;position:fixed;z-index:2000;inset:0;background:rgba(30,40,60,0.18);align-items:center;justify-content:center;">
     <div id="infoContent" style="background:#fff;border-radius:18px;box-shadow:0 8px 32px rgba(0,119,255,0.10);padding:2.5vw 5vw;max-width:95vw;width:350px;position:relative;text-align:center;display:flex;flex-direction:column;align-items:center;">
-      <button id="closeInfoModal" style="position:absolute;top:1em;right:1em;background:none;border:none;font-size:2em;color:#bbb;cursor:pointer;">&times;</button>
-      <div id="infoBody"></div>
     </div>
   </div>
   <div id="reservationModal" style="display:none;position:fixed;z-index:3000;inset:0;background:rgba(30,40,60,0.18);align-items:center;justify-content:center;">
@@ -670,6 +668,98 @@
     document.getElementById('reservationModal').addEventListener('click', function(e) {
       if (e.target === this) closeReservationModal();
     });
+
+    // --- InfoPages modal logic (unified with React) ---
+    const infoPagesContent = {
+      apie: {
+        title: 'Apie mus',
+        body: 'Esame pramogų ir renginių organizavimo komanda, siekianti suteikti nepamirštamų įspūdžių visiems savo klientams. Mūsų tikslas – padėti žmonėms atrasti naujas veiklas, patirti nuotykių ir kurti bendrystės akimirkas.'
+      },
+      paslaugos: {
+        title: 'Paslaugos',
+        body: 'Siūlome įvairias pramogas, renginių įrangos nuomą, žaidimų vedimą, lauko ir vidaus žaidimus, šaudymo pramogas bei kitas paslaugas tiek vaikams, tiek suaugusiems.'
+      },
+      uzsakymai: {
+        title: 'Užsakymai',
+        body: 'Norėdami užsisakyti paslaugą ar rezervuoti veiklą, pasirinkite norimą žaidimą ir užpildykite rezervacijos formą. Gavę užklausą, su jumis susisieksime patvirtinti užsakymą.'
+      },
+      kontaktai: {
+        title: 'Kontaktai',
+        body: 'El. paštas: <a href="mailto:aurimav05@gmail.com">aurimav05@gmail.com</a><br>Instagram: <a href="https://instagram.com/aurimasvi" target="_blank" rel="noopener noreferrer">@aurimasvi</a><br>Facebook: <a href="https://facebook.com/aurimas.vizinis" target="_blank" rel="noopener noreferrer">Aurimas Vižinis</a>'
+      },
+      privatumas: {
+        title: 'Privatumo politika',
+        body: 'Jūsų asmens duomenys yra saugūs ir naudojami tik užsakymų administravimui bei komunikacijai. Duomenys neperduodami trečiosioms šalims be jūsų sutikimo.'
+      },
+      taisykles: {
+        title: 'Naudojimosi taisyklės',
+        body: 'Naudodamiesi svetaine, sutinkate su mūsų paslaugų teikimo sąlygomis. Prašome atsakingai pateikti savo duomenis ir laikytis nurodytų rezervacijos bei dalyvavimo taisyklių.'
+      }
+    };
+
+    function showInfoModal(pageKey) {
+      const modal = document.getElementById('infoModal');
+      const content = document.getElementById('infoContent');
+      if (!infoPagesContent[pageKey]) return;
+      content.innerHTML = `
+        <button id="closeInfoModalBtn" style="position:absolute;top:18px;right:18px;font-size:2em;background:none;border:none;color:#bbb;cursor:pointer">&times;</button>
+        <h2 style="margin-top:0;color:#0077ff">${infoPagesContent[pageKey].title}</h2>
+        <p style="color:#23272f;font-size:1.08em;line-height:1.6">${infoPagesContent[pageKey].body}</p>
+      `;
+      modal.style.display = 'flex';
+      // Close button
+      document.getElementById('closeInfoModalBtn').onclick = function() {
+        modal.style.display = 'none';
+      };
+    }
+
+    // Attach click handlers to all infoPages links (main and side menu)
+    function attachInfoPagesHandlers() {
+      // Main content footer links
+      [
+        { sel: '.FooterLinks a', keys: ['kontaktai','privatumas','taisykles'] },
+        // Side menu links (add if present)
+        { sel: '#sideMenuDrawer a', keys: ['apie','paslaugos','uzsakymai'] }
+      ].forEach(group => {
+        document.querySelectorAll(group.sel).forEach(a => {
+          const text = a.textContent.trim().toLowerCase();
+          let key = null;
+          if (text.includes('apie')) key = 'apie';
+          else if (text.includes('paslaug')) key = 'paslaugos';
+          else if (text.includes('užsak') || text.includes('uzsak')) key = 'uzsakymai';
+          else if (text.includes('kontakt')) key = 'kontaktai';
+          else if (text.includes('privat')) key = 'privatumas';
+          else if (text.includes('taisyk')) key = 'taisykles';
+          if (key && group.keys.includes(key)) {
+            a.addEventListener('click', function(e) {
+              e.preventDefault();
+              showInfoModal(key);
+            });
+          }
+        });
+      });
+    }
+
+    // Hide info modal on overlay click
+    const infoModal = document.getElementById('infoModal');
+    if (infoModal) {
+      infoModal.addEventListener('click', function(e) {
+        if (e.target === this) infoModal.style.display = 'none';
+      });
+    }
+
+    // Attach handlers after DOM loaded and after side menu render
+    window.addEventListener('DOMContentLoaded', function() {
+      attachInfoPagesHandlers();
+    });
+    // Also re-attach after side menu categories render (if side menu is re-rendered)
+    if (typeof renderSideMenuCategories === 'function') {
+      const origRender = renderSideMenuCategories;
+      window.renderSideMenuCategories = function() {
+        origRender();
+        attachInfoPagesHandlers();
+      };
+    }
   </script>
 </body>
 </html>
