@@ -285,6 +285,76 @@
     // --- Side menu and navigation logic (unchanged) ---
     // ...existing code...
 
+    // --- Fetch activity by id or name from URL param ---
+    async function fetchActivity() {
+      const params = new URLSearchParams(window.location.search);
+      let id = params.get('id');
+      let name = params.get('name');
+      activities = await fetch('/api/activities').then(r => r.json());
+      if (id) {
+        activity = activities.find(a => a._id === id);
+      } else if (name) {
+        name = decodeURIComponent(name).toLowerCase().trim();
+        activity = activities.find(a => a.name.toLowerCase().trim() === name);
+      }
+      if (!activity) {
+        document.getElementById('gameName').textContent = 'Veikla nerasta';
+        document.getElementById('reserveBtn').style.display = 'none';
+        return;
+      }
+      // Fill in activity info
+      document.getElementById('gameName').textContent = activity.name;
+      document.getElementById('gameCategory').textContent = activity.category;
+      document.getElementById('gamePrice').textContent = activity.price;
+      document.getElementById('gameDesc').textContent = activity.description;
+      document.getElementById('gameInfo').textContent = activity.info;
+      // ...slider rendering code (unchanged)...
+    }
+
+    // --- Side menu open/close logic ---
+    const menuBtn = document.getElementById('menuBtn');
+    const sideMenuDrawer = document.getElementById('sideMenuDrawer');
+    const sideMenuOverlay = document.getElementById('sideMenuOverlay');
+    const closeMenuBtn = document.getElementById('closeMenuBtn');
+    menuBtn.addEventListener('click', function() {
+      sideMenuDrawer.style.display = 'block';
+      setTimeout(() => sideMenuDrawer.classList.add('open'), 10);
+      sideMenuOverlay.style.display = 'block';
+    });
+    closeMenuBtn.addEventListener('click', function() {
+      sideMenuDrawer.classList.remove('open');
+      setTimeout(() => sideMenuDrawer.style.display = 'none', 250);
+      sideMenuOverlay.style.display = 'none';
+    });
+    sideMenuOverlay.addEventListener('click', function() {
+      sideMenuDrawer.classList.remove('open');
+      setTimeout(() => sideMenuDrawer.style.display = 'none', 250);
+      sideMenuOverlay.style.display = 'none';
+    });
+
+    // --- Render categories in side menu ---
+    async function renderSideMenuCategories() {
+      const cats = await fetch('/api/activities').then(r => r.json());
+      const uniqueCats = [...new Set(cats.map(a => a.category))];
+      const container = document.getElementById('sideMenuCategories');
+      container.innerHTML = '';
+      uniqueCats.forEach(cat => {
+        const a = document.createElement('a');
+        a.textContent = cat;
+        a.href = '/?category=' + encodeURIComponent(cat);
+        a.style.cssText = 'color:#0077ff;font-weight:500;padding:0.4em 0;display:block;text-decoration:none;border-radius:8px;';
+        a.onclick = function(e) {
+          e.preventDefault();
+          // Redirect to main page and scroll to category
+          localStorage.setItem('scrollToCategory', cat.replace(/\s/g, '').toLowerCase());
+          localStorage.setItem('scrollSmooth', '1');
+          window.location.href = '/';
+        };
+        container.appendChild(a);
+      });
+    }
+    renderSideMenuCategories();
+
     // --- Reservation Modal Logic (unified with React modal) ---
     let activity = null;
     let activities = [];
