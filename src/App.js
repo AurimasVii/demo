@@ -185,48 +185,46 @@ const categoryIconMap = {
 
 function App() {
   const [categories, setCategories] = useState([]);
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [checkoutGame, setCheckoutGame] = useState(null);
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [infoPage, setInfoPage] = useState(null);
-  const [activities, setActivities] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [availableTimes, setAvailableTimes] = useState([]);
   const [reservedTimes, setReservedTimes] = useState([]);
   const [selectedDate, setSelectedDate] = useState('');
 
-  // Fetch activities from backend on mount
+  // Fetch activities from backend or fallback to defaultCategories
   useEffect(() => {
+    async function fetchActivities() {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/activities');
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setActivities(data);
+          // Group by category
+          const grouped = {};
+          data.forEach(act => {
+            if (!grouped[act.category]) grouped[act.category] = [];
+            grouped[act.category].push(act);
+          });
+          const cats = Object.keys(grouped).map(catName => ({
+            key: catName.replace(/\s/g, '').toLowerCase(),
+            name: catName,
+            icon: `/icons/${catName.replace(/\s/g, '').toLowerCase()}.png`,
+            games: grouped[catName]
+          }));
+          setCategories(cats);
+        } else {
+          // Fallback to defaultCategories
+          setCategories(defaultCategories);
+        }
+      } catch {
+        setCategories(defaultCategories);
+      }
+      setLoading(false);
+    }
     fetchActivities();
-  }, []);
-
-  // Function to fetch activities from backend
-  const fetchActivities = async () => {
-    setLoading(true);
-    const res = await fetch('/api/activities');
-    const data = await res.json();
-    setActivities(data);
-    setLoading(false);
-  };
-
-  // Ensure activities are always fetched from backend
-  useEffect(() => {
-    fetch('/api/activities')
-      .then(res => res.json())
-      .then(data => {
-        // Group activities by category name
-        const grouped = {};
-        data.forEach(act => {
-          if (!grouped[act.category]) grouped[act.category] = [];
-          grouped[act.category].push(act);
-        });
-        const cats = Object.keys(grouped).map(catName => ({
-          key: catName.replace(/\s/g, '').toLowerCase(),
-          name: catName,
-          icon: categoryIconMap[catName] || '/icons/confetti.png',
-          games: grouped[catName]
-        }));
-        setCategories(cats);
-      });
   }, []);
 
   // When checkoutGame or selectedDate changes, fetch reservations for that activity/date
@@ -272,7 +270,6 @@ function App() {
         } else {
           alert('Rezervacija sėkmingai pateikta!');
           setCheckoutGame(null);
-          fetchActivities();
           // Refetch reserved times after success to update UI
           if (checkoutGame && reservation.date) {
             fetch(`/api/reservations?activityId=${checkoutGame._id}&date=${reservation.date}`)
