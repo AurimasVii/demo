@@ -291,18 +291,18 @@
       let id = params.get('id');
       let name = params.get('name');
       activities = await fetch('/api/activities').then(r => r.json());
+      // Try to get from localStorage if no id or name
       if (!id && !name) {
-        // Try to get from localStorage (React sets selectedGameId)
         const storedId = localStorage.getItem('selectedGameId');
         if (storedId) {
           id = storedId;
         }
       }
-      // Try to find by id
+      // Try to find by id (string or number)
       if (id) {
         activity = activities.find(a => String(a._id) === String(id));
       }
-      // If not found by id, try by name
+      // If not found by id, try by name (case-insensitive)
       if ((!activity || !activity._id) && name) {
         name = decodeURIComponent(name).toLowerCase().trim();
         activity = activities.find(a => a.name && a.name.toLowerCase().trim() === name);
@@ -312,10 +312,14 @@
         const idAsName = decodeURIComponent(id).toLowerCase().trim();
         activity = activities.find(a => a.name && a.name.toLowerCase().trim() === idAsName);
       }
+      // If still not found, try by mainImage (for edge cases)
+      if ((!activity || !activity._id) && id) {
+        activity = activities.find(a => a.mainImage && a.mainImage.includes(id));
+      }
+      // Debug logging for all attempts
       if (!activity || !activity._id) {
         document.getElementById('gameName').textContent = 'Veikla nerasta';
         document.getElementById('reserveBtn').style.display = 'none';
-        // Debug info for admin
         console.warn('Activity not found. Params:', { id, name, activities });
         return;
       }
@@ -325,9 +329,9 @@
       document.getElementById('gamePrice').textContent = activity.price;
       document.getElementById('gameDesc').textContent = activity.description;
       document.getElementById('gameInfo').textContent = activity.info;
-      // If activity.quantity is 0, show 'Užimta' and disable reservation
+      // If activity.quantity is 0, show message and disable reservation
       if (activity.hasQuantity && activity.quantity === 0) {
-        document.getElementById('reserveBtn').textContent = 'Užimta';
+        document.getElementById('reserveBtn').textContent = 'Šiuo metu šios veiklos rezervuoti negalima';
         document.getElementById('reserveBtn').disabled = true;
         document.getElementById('reserveBtn').style.background = '#bbb';
       } else {
@@ -420,31 +424,32 @@
     function showReservationModal() {
       if (!activity) return;
       const modal = document.getElementById('reservationModal');
+      modal.style.display = 'flex';
+      let disabledMsg = '';
+      if (activity.hasQuantity && activity.quantity === 0) {
+        disabledMsg = '<div style="color:#d32f2f;margin-bottom:1em;font-weight:600;">Šiuo metu šios veiklos rezervuoti negalima</div>';
+      }
       modal.innerHTML = `
-        <div class="CheckoutModal" style="background:#fff;border-radius:16px;max-width:420px;width:95vw;padding:2em 1.5em;box-shadow:0 2px 24px rgba(0,119,255,0.10);animation:fadeIn 0.2s;position:relative;">
+        <div class="CheckoutModal" style="background:#fff;border-radius:16px;max-width:420px;width:95vw;padding:2em 1.5em;box-shadow:0 2px 24px rgba(0,119,255,0.10);animation:fadeIn 0.2s;position:relative;display:flex;flex-direction:column;align-items:center;">
           <button class="CloseBtn" aria-label="Uždaryti" style="position:absolute;top:16px;right:16px;font-size:1.7em;background:none;border:none;color:#bbb;cursor:pointer;" onclick="closeReservationModal()">&times;</button>
           <h2 style="margin-top:0;color:#0077ff;font-size:1.3em;">Rezervuoti: ${activity.name}</h2>
+          ${activity.mainImage ? `<img src="${activity.mainImage}" alt="${activity.name}" style="max-width:90%;max-height:180px;border-radius:12px;margin-bottom:1em;object-fit:cover;box-shadow:0 2px 12px rgba(0,119,255,0.07);" />` : ''}
+          ${disabledMsg}
           <form id="reservationForm" class="CheckoutForm" autocomplete="off">
-            <label>Vardas:<br><input name="name" required maxlength="40" autocomplete="name" /></label><br>
-            <label>El. paštas:<br><input name="email" type="email" required maxlength="60" autocomplete="email" /></label><br>
-            <label>Telefonas:<br><input name="phone" required maxlength="30" autocomplete="tel" /></label><br>
-            <label>Data:<br><input name="date" type="date" required min="${new Date().toISOString().slice(0,10)}" /></label><br>
-            <label>Laikas:<br><select name="time" required><option value="">Pasirinkite datą</option></select></label><br>
+            <label>Vardas:<br><input name="name" required maxlength="40" autocomplete="name" ${activity.hasQuantity && activity.quantity === 0 ? 'disabled' : ''} /></label><br>
+            <label>El. paštas:<br><input name="email" type="email" required maxlength="60" autocomplete="email" ${activity.hasQuantity && activity.quantity === 0 ? 'disabled' : ''} /></label><br>
+            <label>Telefonas:<br><input name="phone" required maxlength="30" autocomplete="tel" ${activity.hasQuantity && activity.quantity === 0 ? 'disabled' : ''} /></label><br>
+            <label>Data:<br><input name="date" type="date" required min="${new Date().toISOString().slice(0,10)}" ${activity.hasQuantity && activity.quantity === 0 ? 'disabled' : ''} /></label><br>
+            <label>Laikas:<br><select name="time" required ${activity.hasQuantity && activity.quantity === 0 ? 'disabled' : ''}><option value="">Pasirinkite datą</option></select></label><br>
             <div id="reservationError" style="color:#d32f2f;font-size:0.98em;margin:0.5em 0 0.2em 0;"></div>
-            <button type="submit" style="background:#0077ff;color:#fff;border:none;border-radius:8px;padding:0.7em 2em;font-size:1em;font-weight:500;cursor:pointer;margin-top:0.7em;">Patvirtinti</button>
+            <button type="submit" style="background:${activity.hasQuantity && activity.quantity === 0 ? '#bbb' : '#0077ff'};color:#fff;border:none;border-radius:8px;padding:0.7em 2em;font-size:1em;font-weight:500;cursor:pointer;margin-top:0.7em;" ${activity.hasQuantity && activity.quantity === 0 ? 'disabled' : ''}>Rezervuoti</button>
           </form>
         </div>
       `;
-      modal.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-      // Focus first input
-      setTimeout(() => {
-        const firstInput = document.querySelector('#reservationForm input[name="name"]');
-        if (firstInput) firstInput.focus();
-      }, 100);
-      // Add listeners
-      document.getElementById('reservationForm').addEventListener('submit', submitReservationForm);
-      document.querySelector('#reservationForm input[name="date"]').addEventListener('change', onDateChange);
+      if (!(activity.hasQuantity && activity.quantity === 0)) {
+        document.getElementById('reservationForm').addEventListener('submit', submitReservationForm);
+        document.querySelector('#reservationForm input[name="date"]').addEventListener('change', onDateChange);
+      }
     }
     function closeReservationModal() {
       document.getElementById('reservationModal').style.display = 'none';

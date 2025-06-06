@@ -407,25 +407,29 @@ function App() {
         <div className="CheckoutModal" onClick={() => setCheckoutGame(null)}>
           <div className="CheckoutContent" onClick={e => e.stopPropagation()} style={{maxWidth:480, width:'95vw', maxHeight:'90vh', overflowY:'auto', padding:'2em 1.5em', borderRadius:18, background:'#fff', boxShadow:'0 4px 32px rgba(0,119,255,0.10)', position:'relative', display:'flex', flexDirection:'column', alignItems:'center'}}>
             <h2 style={{marginTop:0, color:'#0077ff', fontSize:'1.3em'}}>Rezervuoti: {checkoutGame.name}</h2>
+            {checkoutGame.mainImage && (
+              <img src={checkoutGame.mainImage} alt={checkoutGame.name} style={{maxWidth:'90%',maxHeight:180,borderRadius:12,marginBottom:'1em',objectFit:'cover',boxShadow:'0 2px 12px rgba(0,119,255,0.07)'}} />
+            )}
             <form id="reservationForm" className="CheckoutForm" autoComplete="off" onSubmit={handleReservationSubmit}>
               <input type="text" name="name" placeholder="Jūsų vardas" required />
               <input type="email" name="email" placeholder="El. paštas" required />
               <input type="tel" name="phone" placeholder="Telefonas" required />
-              <label style={{marginTop:'1em',fontWeight:500}}>Pasirinkite datą ir laiką:</label>
-              <input type="date" name="date" required value={selectedDate} onChange={e=>setSelectedDate(e.target.value)} />
-              {selectedDate && (
-                <select name="time" required style={{marginTop:'0.3em'}}>
-                  <option value="">Pasirinkite laiką</option>
-                  {availableTimes.map(time => {
-                    const isBooked = reservedTimes.filter(t=>t===time).length >= (checkoutGame.hasQuantity ? checkoutGame.quantity : 1);
-                    return <option key={time} value={time} disabled={isBooked}>{time}{isBooked ? ' (užimta)' : ''}</option>;
-                  })}
-                </select>
-              )}
               {checkoutGame.hasQuantity && checkoutGame.quantity === 0 ? (
-                <button type="button" disabled style={{background:'#bbb',color:'#fff',border:'none',borderRadius:'8px',padding:'0.7em 2em',fontSize:'1em',fontWeight:500,marginTop:'0.7em'}}>Užimta</button>
-              ) : (
-                <button type="submit" style={{background:'#0077ff',color:'#fff',border:'none',borderRadius:'8px',padding:'0.7em 2em',fontSize:'1em',fontWeight:500,marginTop:'0.7em'}}>Rezervuoti</button>
+                <div style={{color:'#d32f2f',margin:'1em 0',fontWeight:600}}>Šiuo metu šios veiklos rezervuoti negalima</div>
+                ) : (
+                <>
+                  <input type="date" name="date" required value={selectedDate} onChange={e=>setSelectedDate(e.target.value)} />
+                  {selectedDate && (
+                    <select name="time" required style={{marginTop:'0.3em'}} disabled={checkoutGame.hasQuantity && checkoutGame.quantity === 0}>
+                      <option value="">Pasirinkite laiką</option>
+                      {availableTimes.map(time => {
+                        const isBooked = reservedTimes.filter(t=>t===time).length >= (checkoutGame.hasQuantity ? checkoutGame.quantity : 1);
+                        return <option key={time} value={time} disabled={isBooked || (checkoutGame.hasQuantity && checkoutGame.quantity === 0)}>{time}{isBooked || (checkoutGame.hasQuantity && checkoutGame.quantity === 0) ? ' (užimta)' : ''}</option>;
+                      })}
+                    </select>
+                  )}
+                  <button type="submit" style={{background:'#0077ff',color:'#fff',border:'none',borderRadius:'8px',padding:'0.7em 2em',fontSize:'1em',fontWeight:500,marginTop:'0.7em'}} disabled={checkoutGame.hasQuantity && checkoutGame.quantity === 0}>Rezervuoti</button>
+                </>
               )}
             </form>
             <div style={{ marginTop: '1.5em', width:'100%', display:'flex', justifyContent:'center' }}>
