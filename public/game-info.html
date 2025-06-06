@@ -521,7 +521,7 @@
             <input type="email" name="email" placeholder="El. paštas" required ${activity.hasQuantity && activity.quantity === 0 ? 'disabled' : ''} />
             <input type="tel" name="phone" placeholder="Telefonas" required ${activity.hasQuantity && activity.quantity === 0 ? 'disabled' : ''} />
             ${activity.hasQuantity && activity.quantity === 0 ? disabledMsg : `
-              <input type="date" name="date" required min="${new Date().toISOString().slice(0,10)}" />
+              <input type="date" name="date" required min="${new Date().toISOString().slice(0,10)} " />
               <select name="time" required style="margin-top:0.3em;">
                 <option value="">Pasirinkite laiką</option>
               </select>
