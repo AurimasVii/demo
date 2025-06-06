@@ -413,14 +413,12 @@
 
     // --- Render categories in side menu ---
     async function renderSideMenuCategories() {
-      // Try to get categories from localStorage (with custom icons)
       let cats = [];
       try {
         const stored = localStorage.getItem('categories');
         if (stored) cats = JSON.parse(stored);
       } catch {}
       if (!cats.length) {
-        // Fallback: fetch from backend and group by category
         const acts = await fetch('/api/activities').then(r => r.json());
         const uniqueCats = [...new Set(acts.map(a => a.category))];
         cats = uniqueCats.map(catName => ({
@@ -440,18 +438,20 @@
       container.innerHTML = '';
       cats.forEach(cat => {
         const a = document.createElement('a');
-        a.textContent = cat.name;
         a.href = '/?category=' + encodeURIComponent(cat.name);
-        a.style.cssText = 'color:#0077ff;font-weight:500;padding:0.4em 0;display:flex;align-items:center;gap:0.7em;text-decoration:none;border-radius:8px;';
+        a.style.cssText = 'display:flex;align-items:center;gap:0.7em;text-decoration:none;color:#0077ff;font-weight:500;padding:0.4em 0;border-radius:8px;background:#fff;box-shadow:0 2px 16px rgba(0,0,0,0.04);margin-bottom:0.5em;min-width:110px;min-height:80px;';
         const img = document.createElement('img');
         img.src = cat.icon || '/icons/confetti.png';
         img.alt = cat.name;
-        img.style.cssText = 'width:28px;height:28px;border-radius:6px;object-fit:cover;box-shadow:0 2px 8px #eaf3ff;margin-right:0.5em;background:#f8fafc;';
+        img.style.cssText = 'width:32px;height:32px;border-radius:8px;object-fit:cover;box-shadow:0 2px 8px #eaf3ff;background:#f8fafc;';
         img.onerror = function() { this.onerror = null; this.src = '/icons/confetti.png'; };
-        a.prepend(img);
+        const span = document.createElement('span');
+        span.textContent = cat.name;
+        span.style.cssText = 'font-size:1.1em;';
+        a.appendChild(img);
+        a.appendChild(span);
         a.onclick = function(e) {
           e.preventDefault();
-          // Redirect to main page and scroll to category
           localStorage.setItem('scrollToCategory', cat.key);
           localStorage.setItem('scrollSmooth', '1');
           window.location.href = '/';
