@@ -2,44 +2,28 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
+    <meta name="description" content="Web site created using create-react-app" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
     <title>React App</title>
+    <style>
+      .skip-link { position:absolute;left:-999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:1000; }
+      .skip-link:focus { left:0;top:0;width:auto;height:auto;background:#0077ff;color:#fff;padding:0.7em 1.2em;border-radius:0 0 8px 0;outline:2px solid #fff; }
+      @media (max-width:700px) {
+        html, body { touch-action: manipulation; }
+      }
+    </style>
   </head>
-  <body>
+  <body style="margin:0;padding:0;min-height:100vh;background:#f9fbfd;">
+    <a href="#root" class="skip-link">Praleisti ir eiti prie turinio</a>
+    <h1 style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">Beno rezervacijų sistema</h1>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
     <script>
+      // Smoothly scroll to category after redirect from game-info.html (desktop/mobile)
       function scrollToCategoryIfNeeded() {
         var catKey = localStorage.getItem('scrollToCategory');
         var smooth = localStorage.getItem('scrollSmooth');
@@ -47,17 +31,21 @@
           var tryScroll = function(attempts) {
             var el = document.getElementById(catKey) || document.querySelector(`[id='${catKey}']`);
             if (el) {
-              el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              el.scrollIntoView({ behavior: 'smooth', block: window.innerWidth < 700 ? 'start' : 'center' });
               localStorage.removeItem('scrollToCategory');
               localStorage.removeItem('scrollSmooth');
-            } else if (attempts < 20) {
-              setTimeout(function() { tryScroll(attempts + 1); }, 150);
+              // Optionally focus the section for accessibility
+              if (el.tabIndex === undefined) el.tabIndex = -1;
+              el.focus({ preventScroll: true });
+            } else if (attempts < 30) {
+              setTimeout(function() { tryScroll(attempts + 1); }, 120);
             }
           };
           tryScroll(0);
         }
       }
       window.addEventListener('DOMContentLoaded', scrollToCategoryIfNeeded);
+      window.addEventListener('load', scrollToCategoryIfNeeded);
     </script>
   </body>
 </html>
