@@ -188,6 +188,7 @@ function App() {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [checkoutGame, setCheckoutGame] = useState(null);
+  const [availableTimes, setAvailableTimes] = useState([]); // <-- Add this line
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [infoPage, setInfoPage] = useState(null);
   const [reservedTimes, setReservedTimes] = useState([]);
