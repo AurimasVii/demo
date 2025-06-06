@@ -193,6 +193,7 @@ function App() {
   const [infoPage, setInfoPage] = useState(null);
   const [reservedTimes, setReservedTimes] = useState([]);
   const [selectedDate, setSelectedDate] = useState('');
+  const [infoModalGame, setInfoModalGame] = useState(null); // New state for info modal
 
   // Fetch activities from backend or fallback to defaultCategories
   useEffect(() => {
@@ -338,7 +339,7 @@ function App() {
               style={{display:'flex',alignItems:'center',gap:'0.7em',textDecoration:'none',color:'#0077ff',fontWeight:500,padding:'0.4em 0',borderRadius:'8px'}}
               onClick={() => setSideMenuOpen(false)}
             >
-              <img src={cat.icon} alt={cat.name} style={{width:32,height:32,borderRadius:8,objectFit:'contain',background:'#f8fafc'}} />
+              <img src={cat.icon || '/icons/confetti.png'} alt={cat.name} style={{width:32,height:32,borderRadius:8,objectFit:'contain',background:'#f8fafc'}} />
               <span>{cat.name}</span>
             </a>
           ))}
@@ -387,7 +388,7 @@ function App() {
                   <img src={getActivityImage(game)} alt={game.name} style={{width: '100%', maxWidth: 120, maxHeight: 120, borderRadius: 12, objectFit: 'cover', marginBottom: 8}} />
                   <div style={{fontWeight:600,marginBottom:4}}>{game.name}</div>
                   <div style={{color:'#0077ff',fontWeight:500,marginBottom:4}}>{game.price}</div>
-                  <div style={{fontSize:'0.98em',color:'#555',marginBottom:4}}>{game.description}</div>
+                  <button onClick={() => setInfoModalGame(game)} style={{background:'#eaf3ff',color:'#0077ff',border:'none',borderRadius:'8px',padding:'0.5em 1.2em',fontWeight:500,cursor:'pointer',marginBottom:'0.5em'}}>Daugiau informacijos</button>
                   <button onClick={() => setCheckoutGame(game)} style={{background:'#0077ff',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5em 1.2em',fontWeight:500,cursor:'pointer'}}>Rezervuoti</button>
                 </li>
               ))}
@@ -397,60 +398,25 @@ function App() {
         <p>Susisiekite su mumis dėl daugiau informacijos ir užsakymų.</p>
       </main>
 
-      {checkoutGame && (
-        <div className="CheckoutModal" onClick={() => setCheckoutGame(null)}>
-          <div className="CheckoutContent" onClick={e => e.stopPropagation()} style={{maxWidth:480, width:'95vw', maxHeight:'90vh', overflowY:'auto', padding:'2em 1.5em', borderRadius:18, background:'#fff', boxShadow:'0 4px 32px rgba(0,119,255,0.10)', position:'relative', display:'flex', flexDirection:'column', alignItems:'center'}}>
-            <h2 style={{marginTop:0, color:'#0077ff', fontSize:'1.3em'}}>Rezervuoti: {checkoutGame.name}</h2>
-            <img src={getActivityImage(checkoutGame)} alt={checkoutGame.name} style={{maxWidth:'90%',maxHeight:180,borderRadius:12,marginBottom:'1em',objectFit:'cover',boxShadow:'0 2px 12px rgba(0,119,255,0.07)'}} />
-            <form id="reservationForm" className="CheckoutForm" autoComplete="off" onSubmit={handleReservationSubmit}>
-              <input type="text" name="name" placeholder="Jūsų vardas" required />
-              <input type="email" name="email" placeholder="El. paštas" required />
-              <input type="tel" name="phone" placeholder="Telefonas" required />
-              {checkoutGame.hasQuantity && checkoutGame.quantity === 0 ? (
-                <div style={{color:'#d32f2f',margin:'1em 0',fontWeight:600}}>Šiuo metu šios veiklos rezervuoti negalima</div>
-                ) : (
-                <>
-                  <input type="date" name="date" required value={selectedDate} onChange={e=>setSelectedDate(e.target.value)} />
-                  {selectedDate && (
-                    <select name="time" required style={{marginTop:'0.3em'}} disabled={checkoutGame.hasQuantity && checkoutGame.quantity === 0}>
-                      <option value="">Pasirinkite laiką</option>
-                      {availableTimes.map(time => {
-                        const isBooked = reservedTimes.filter(t=>t===time).length >= (checkoutGame.hasQuantity ? checkoutGame.quantity : 1);
-                        return <option key={time} value={time} disabled={isBooked || (checkoutGame.hasQuantity && checkoutGame.quantity === 0)}>{time}{isBooked || (checkoutGame.hasQuantity && checkoutGame.quantity === 0) ? ' (užimta)' : ''}</option>;
-                      })}
-                    </select>
-                  )}
-                  <button type="submit" style={{background:'#0077ff',color:'#fff',border:'none',borderRadius:'8px',padding:'0.7em 2em',fontSize:'1em',fontWeight:500,marginTop:'0.7em'}} disabled={checkoutGame.hasQuantity && checkoutGame.quantity === 0}>Rezervuoti</button>
-                </>
-              )}
-            </form>
-            <div style={{ marginTop: '1.5em', width:'100%', display:'flex', justifyContent:'center' }}>
-              <button
-                type="button"
-                className="CheckoutInfoBtn"
-                style={{
-                  background: '#0077ff',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '8px',
-                  padding: '0.7em 2em',
-                  fontSize: '1em',
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                  transition: 'background 0.18s, transform 0.18s',
-                  margin: '0 auto',
-                  display: 'block'
-                }}
-                onClick={() => {
-                  if (checkoutGame && checkoutGame._id) {
-                    localStorage.setItem('selectedGameId', checkoutGame._id);
-                  } else if (checkoutGame && checkoutGame.name) {
-                    localStorage.setItem('selectedGameId', checkoutGame.name);
-                  }
-                  window.location.href = '/game-info.html';
-                }}
-              >Daugiau informacijos</button>
-            </div>
+      {/* Info Modal: show all images and full info */}
+      {infoModalGame && (
+        <div className="CheckoutModal" onClick={() => setInfoModalGame(null)}>
+          <div className="CheckoutContent" onClick={e => e.stopPropagation()} style={{maxWidth:520, width:'95vw', maxHeight:'90vh', overflowY:'auto', padding:'2em 1.5em', borderRadius:18, background:'#fff', boxShadow:'0 4px 32px rgba(0,119,255,0.10)', position:'relative', display:'flex', flexDirection:'column', alignItems:'center'}}>
+            <button className="CloseBtn" onClick={() => setInfoModalGame(null)} style={{position:'absolute',top:18,right:18,fontSize:'2em',background:'none',border:'none',color:'#bbb',cursor:'pointer'}}>&times;</button>
+            <h2 style={{marginTop:0, color:'#0077ff', fontSize:'1.3em'}}>{infoModalGame.name}</h2>
+            {/* Image slider for all images */}
+            {infoModalGame.images && infoModalGame.images.length > 0 && (
+              <div style={{display:'flex',gap:'0.5em',flexWrap:'wrap',justifyContent:'center',marginBottom:'1em'}}>
+                {infoModalGame.images.map((img, idx) => (
+                  <img key={idx} src={img} alt={infoModalGame.name+idx} style={{width:90,height:90,borderRadius:10,objectFit:'cover',boxShadow:'0 2px 8px rgba(0,119,255,0.07)'}} />
+                ))}
+              </div>
+            )}
+            <div style={{color:'#0077ff',fontWeight:500,marginBottom:8}}>{infoModalGame.price}</div>
+            <div style={{fontSize:'1.08em',color:'#23272f',marginBottom:8}}>{infoModalGame.description}</div>
+            <div style={{fontSize:'0.98em',color:'#555',marginBottom:8}}>{infoModalGame.info}</div>
+            <div style={{fontSize:'0.98em',color:'#888',marginBottom:8}}>Kategorija: {infoModalGame.category}</div>
+            <button onClick={() => { setCheckoutGame(infoModalGame); setInfoModalGame(null); }} style={{background:'#0077ff',color:'#fff',border:'none',borderRadius:'8px',padding:'0.7em 2em',fontWeight:500,marginTop:'1em',fontSize:'1em',cursor:'pointer'}}>Rezervuoti</button>
           </div>
         </div>
       )}
