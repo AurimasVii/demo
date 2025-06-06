@@ -507,7 +507,6 @@
       document.getElementById('sliderPrev').style.display = sliderImages.length>1?'block':'none';
       document.getElementById('sliderNext').style.display = sliderImages.length>1?'block':'none';
     }
-    // Ensure event listeners are set after DOMContentLoaded
     document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('sliderPrev').onclick = ()=>showSliderImg(sliderIdx-1);
       document.getElementById('sliderNext').onclick = ()=>showSliderImg(sliderIdx+1);
@@ -521,27 +520,15 @@
         const dx = e.changedTouches[0].clientX-touchStartX;
         if (Math.abs(dx)>40) showSliderImg(sliderIdx-(dx>0?1:-1));
       });
+      // If activity images are available, call loadActivityImages here
+      if (window.activityImagesForSlider) {
+        loadActivityImages(window.activityImagesForSlider);
+      }
     });
     // When loading activity, set sliderImages and show first
     function loadActivityImages(images) {
       sliderImages = (images && images.length ? images.slice() : ['/icons/confetti.png']);
       showSliderImg(0);
-    }
-    // --- Side menu category navigation ---
-    function setupSideMenuCategoryLinks(categories) {
-      const sideMenu = document.getElementById('sideMenuCategories');
-      sideMenu.innerHTML = '';
-      categories.forEach(cat => {
-        const btn = document.createElement('button');
-        btn.textContent = cat.name;
-        btn.style = 'background:none;border:none;color:#0077ff;font-size:1em;text-align:left;padding:0.5em 0;cursor:pointer;';
-        btn.onclick = function() {
-          localStorage.setItem('scrollToCategory', cat.key);
-          localStorage.setItem('scrollSmooth', '1');
-          window.location.href = '/index.html';
-        };
-        sideMenu.appendChild(btn);
-      });
     }
   </script>
 </body>
