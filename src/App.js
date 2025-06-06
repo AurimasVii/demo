@@ -205,6 +205,11 @@ const categoryIconMap = {
   saudymopramogos: '/icons/shooting-range.png',
 };
 
+// Helper: get icon for category (custom from localStorage if set, else fallback)
+function getCategoryIcon(cat) {
+  return cat.icon || categoryIconMap[cat.key] || categoryIconMap[cat.key.replace(/\s/g, '').toLowerCase()] || '/icons/confetti.png';
+}
+
 function App() {
   const [categories, setCategories] = useState([]);
   const [activities, setActivities] = useState([]);
@@ -346,7 +351,7 @@ function App() {
         <div style={{fontWeight:600,marginBottom:'0.7em',color:'#23272f'}}>Kategorijos</div>
         <div style={{display:'flex',flexDirection:'column',gap:'0.5em'}}>
           {categories.map(cat => {
-            const iconSrc = categoryIconMap[cat.key] || categoryIconMap[cat.key.replace(/\s/g, '').toLowerCase()] || '/icons/confetti.png';
+            const iconSrc = getCategoryIcon(cat);
             return (
               <a
                 key={cat.key}
@@ -383,8 +388,7 @@ function App() {
       {/* Category links at the top of the main screen */}
       <section className="Activities">
         {categories.map(cat => {
-          // Try both key and normalized key for icon
-          const iconSrc = categoryIconMap[cat.key] || categoryIconMap[cat.key.replace(/\s/g, '').toLowerCase()] || '/icons/confetti.png';
+          const iconSrc = getCategoryIcon(cat);
           return (
             <a
               key={cat.key}

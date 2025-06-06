@@ -413,19 +413,46 @@
 
     // --- Render categories in side menu ---
     async function renderSideMenuCategories() {
-      const cats = await fetch('/api/activities').then(r => r.json());
-      const uniqueCats = [...new Set(cats.map(a => a.category))];
+      // Try to get categories from localStorage (with custom icons)
+      let cats = [];
+      try {
+        const stored = localStorage.getItem('categories');
+        if (stored) cats = JSON.parse(stored);
+      } catch {}
+      if (!cats.length) {
+        // Fallback: fetch from backend and group by category
+        const acts = await fetch('/api/activities').then(r => r.json());
+        const uniqueCats = [...new Set(acts.map(a => a.category))];
+        cats = uniqueCats.map(catName => ({
+          key: catName.replace(/\s/g, '').toLowerCase(),
+          name: catName,
+          icon: {
+            'Vandens pramogos': '/icons/swimming.png',
+            'Renginių įrangos nuoma': '/icons/tools.png',
+            'Pramogų vedimas': '/icons/confetti.png',
+            'Lauko žaidimai': '/icons/park.png',
+            'Vidaus pramogos': '/icons/cinema.png',
+            'Šaudymo pramogos': '/icons/shooting-range.png'
+          }[catName] || '/icons/confetti.png'
+        }));
+      }
       const container = document.getElementById('sideMenuCategories');
       container.innerHTML = '';
-      uniqueCats.forEach(cat => {
+      cats.forEach(cat => {
         const a = document.createElement('a');
-        a.textContent = cat;
-        a.href = '/?category=' + encodeURIComponent(cat);
-        a.style.cssText = 'color:#0077ff;font-weight:500;padding:0.4em 0;display:block;text-decoration:none;border-radius:8px;';
+        a.textContent = cat.name;
+        a.href = '/?category=' + encodeURIComponent(cat.name);
+        a.style.cssText = 'color:#0077ff;font-weight:500;padding:0.4em 0;display:flex;align-items:center;gap:0.7em;text-decoration:none;border-radius:8px;';
+        const img = document.createElement('img');
+        img.src = cat.icon || '/icons/confetti.png';
+        img.alt = cat.name;
+        img.style.cssText = 'width:28px;height:28px;border-radius:6px;object-fit:cover;box-shadow:0 2px 8px #eaf3ff;margin-right:0.5em;background:#f8fafc;';
+        img.onerror = function() { this.onerror = null; this.src = '/icons/confetti.png'; };
+        a.prepend(img);
         a.onclick = function(e) {
           e.preventDefault();
           // Redirect to main page and scroll to category
-          localStorage.setItem('scrollToCategory', cat.replace(/\s/g, '').toLowerCase());
+          localStorage.setItem('scrollToCategory', cat.key);
           localStorage.setItem('scrollSmooth', '1');
           window.location.href = '/';
         };
