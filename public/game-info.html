@@ -488,7 +488,7 @@
     // Smooth redirect to main page and scroll to category
     function goToCategory(catKey) {
       localStorage.setItem('scrollToCategory', catKey);
-      localStorage.setItem('scrollSmooth', '1');
+      localStorage.setItem('scrollSmooth', catKey);
       window.location.href = '/'; // Use root, not /index.html
     }
     // Example: attach to category links in side menu
