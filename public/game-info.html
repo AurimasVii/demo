@@ -329,6 +329,41 @@
       document.getElementById('gamePrice').textContent = activity.price;
       document.getElementById('gameDesc').textContent = activity.description;
       document.getElementById('gameInfo').textContent = activity.info;
+      // Render image slider (show mainImage or first image)
+      const slider = document.getElementById('slider');
+      slider.innerHTML = '';
+      let images = (activity.images && activity.images.length) ? activity.images : (activity.mainImage ? [activity.mainImage] : []);
+      if (images.length > 0) {
+        let idx = 0;
+        const img = document.createElement('img');
+        img.src = images[0];
+        img.alt = activity.name;
+        img.style.maxWidth = '100%';
+        img.style.maxHeight = '220px';
+        img.style.borderRadius = '12px';
+        img.style.objectFit = 'cover';
+        img.style.boxShadow = '0 2px 12px rgba(0,119,255,0.07)';
+        slider.appendChild(img);
+        // If multiple images, add simple left/right buttons
+        if (images.length > 1) {
+          const leftBtn = document.createElement('button');
+          leftBtn.textContent = '<';
+          leftBtn.className = 'slider-btn left';
+          leftBtn.onclick = function() {
+            idx = (idx - 1 + images.length) % images.length;
+            img.src = images[idx];
+          };
+          slider.appendChild(leftBtn);
+          const rightBtn = document.createElement('button');
+          rightBtn.textContent = '>';
+          rightBtn.className = 'slider-btn right';
+          rightBtn.onclick = function() {
+            idx = (idx + 1) % images.length;
+            img.src = images[idx];
+          };
+          slider.appendChild(rightBtn);
+        }
+      }
       // If activity.quantity is 0, show message and disable reservation
       if (activity.hasQuantity && activity.quantity === 0) {
         document.getElementById('reserveBtn').textContent = 'Šiuo metu šios veiklos rezervuoti negalima';
@@ -339,7 +374,7 @@
         document.getElementById('reserveBtn').disabled = false;
         document.getElementById('reserveBtn').style.background = '';
       }
-      // ...slider rendering code (unchanged)...
+      // ...existing code...
     }
 
     // --- Side menu open/close logic ---
@@ -417,7 +452,41 @@
       document.getElementById('gamePrice').textContent = activity.price;
       document.getElementById('gameDesc').textContent = activity.description;
       document.getElementById('gameInfo').textContent = activity.info;
-      // ...slider rendering code (unchanged)...
+      // Render image slider (show mainImage or first image)
+      const slider = document.getElementById('slider');
+      slider.innerHTML = '';
+      let images = (activity.images && activity.images.length) ? activity.images : (activity.mainImage ? [activity.mainImage] : []);
+      if (images.length > 0) {
+        let idx = 0;
+        const img = document.createElement('img');
+        img.src = images[0];
+        img.alt = activity.name;
+        img.style.maxWidth = '100%';
+        img.style.maxHeight = '220px';
+        img.style.borderRadius = '12px';
+        img.style.objectFit = 'cover';
+        img.style.boxShadow = '0 2px 12px rgba(0,119,255,0.07)';
+        slider.appendChild(img);
+        // If multiple images, add simple left/right buttons
+        if (images.length > 1) {
+          const leftBtn = document.createElement('button');
+          leftBtn.textContent = '<';
+          leftBtn.className = 'slider-btn left';
+          leftBtn.onclick = function() {
+            idx = (idx - 1 + images.length) % images.length;
+            img.src = images[idx];
+          };
+          slider.appendChild(leftBtn);
+          const rightBtn = document.createElement('button');
+          rightBtn.textContent = '>';
+          rightBtn.className = 'slider-btn right';
+          rightBtn.onclick = function() {
+            idx = (idx + 1) % images.length;
+            img.src = images[idx];
+          };
+          slider.appendChild(rightBtn);
+        }
+      }
     }
 
     // --- Reservation Modal UI ---
