@@ -3,7 +3,15 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 
 const Activity = mongoose.model('Activity', new mongoose.Schema({
-  name: String, description: String, images: [String], price: String, info: String, category: String, mainImage: String
+  name: String,
+  description: String,
+  images: [String],
+  price: String,
+  info: String,
+  category: String,
+  mainImage: String,
+  hasQuantity: { type: Boolean, default: false },
+  quantity: { type: Number, default: 1 }
 }));
 
 const defaultCategories = [

@@ -190,6 +190,9 @@ function App() {
   const [infoPage, setInfoPage] = useState(null);
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [availableTimes, setAvailableTimes] = useState([]);
+  const [reservedTimes, setReservedTimes] = useState([]);
+  const [selectedDate, setSelectedDate] = useState('');
 
   // Fetch activities from backend on mount
   useEffect(() => {
@@ -226,6 +229,18 @@ function App() {
       });
   }, []);
 
+  // When checkoutGame or selectedDate changes, fetch reservations for that activity/date
+  useEffect(() => {
+    if (!checkoutGame || !selectedDate) return;
+    fetch(`/api/reservations?activityId=${checkoutGame._id}&date=${selectedDate}`)
+      .then(res => res.json())
+      .then(reservations => {
+        setReservedTimes(reservations.map(r => r.time));
+      });
+    // For demo: assume available times are every hour 10:00-20:00
+    setAvailableTimes(Array.from({length:11},(_,i)=>`${(10+i).toString().padStart(2,'0')}:00`));
+  }, [checkoutGame, selectedDate]);
+
   function handleReservationSubmit(e) {
     e.preventDefault();
     const form = e.target;
@@ -243,10 +258,30 @@ function App() {
       body: JSON.stringify(reservation)
     })
       .then(res => res.json())
-      .then(() => {
-        alert('Rezervacija sėkmingai pateikta!');
-        setCheckoutGame(null);
-        fetchActivities(); // Refetch activities after reservation
+      .then(resp => {
+        if (resp.error) {
+          alert(resp.error);
+          // Refetch reserved times after error to update UI
+          if (checkoutGame && reservation.date) {
+            fetch(`/api/reservations?activityId=${checkoutGame._id}&date=${reservation.date}`)
+              .then(res => res.json())
+              .then(reservations => {
+                setReservedTimes(reservations.map(r => r.time));
+              });
+          }
+        } else {
+          alert('Rezervacija sėkmingai pateikta!');
+          setCheckoutGame(null);
+          fetchActivities();
+          // Refetch reserved times after success to update UI
+          if (checkoutGame && reservation.date) {
+            fetch(`/api/reservations?activityId=${checkoutGame._id}&date=${reservation.date}`)
+              .then(res => res.json())
+              .then(reservations => {
+                setReservedTimes(reservations.map(r => r.time));
+              });
+          }
+        }
       });
   }
 
@@ -392,8 +427,16 @@ function App() {
               <input type="email" name="email" placeholder="El. paštas" required />
               <input type="tel" name="phone" placeholder="Telefonas" required />
               <label style={{marginTop:'1em',fontWeight:500}}>Pasirinkite datą ir laiką:</label>
-              <input type="date" name="date" required style={{marginTop:'0.3em'}} />
-              <input type="time" name="time" required style={{marginTop:'0.3em'}} />
+              <input type="date" name="date" required value={selectedDate} onChange={e=>setSelectedDate(e.target.value)} />
+              {selectedDate && (
+                <select name="time" required style={{marginTop:'0.3em'}}>
+                  <option value="">Pasirinkite laiką</option>
+                  {availableTimes.map(time => {
+                    const isBooked = reservedTimes.filter(t=>t===time).length >= (checkoutGame.hasQuantity ? checkoutGame.quantity : 1);
+                    return <option key={time} value={time} disabled={isBooked}>{time}{isBooked ? ' (užimta)' : ''}</option>;
+                  })}
+                </select>
+              )}
               <button type="submit">Rezervuoti</button>
             </form>
             <div style={{ marginTop: '1.5em', width:'100%', display:'flex', justifyContent:'center' }}>
