@@ -40,18 +40,24 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
     <script>
-      window.addEventListener('DOMContentLoaded', function() {
+      function scrollToCategoryIfNeeded() {
         var catKey = localStorage.getItem('scrollToCategory');
         var smooth = localStorage.getItem('scrollSmooth');
         if (catKey && smooth === '1') {
-          var el = document.getElementById(catKey) || document.querySelector(`[id='${catKey}']`);
-          if (el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-          localStorage.removeItem('scrollToCategory');
-          localStorage.removeItem('scrollSmooth');
+          var tryScroll = function(attempts) {
+            var el = document.getElementById(catKey) || document.querySelector(`[id='${catKey}']`);
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              localStorage.removeItem('scrollToCategory');
+              localStorage.removeItem('scrollSmooth');
+            } else if (attempts < 20) {
+              setTimeout(function() { tryScroll(attempts + 1); }, 150);
+            }
+          };
+          tryScroll(0);
         }
-      });
+      }
+      window.addEventListener('DOMContentLoaded', scrollToCategoryIfNeeded);
     </script>
   </body>
 </html>
