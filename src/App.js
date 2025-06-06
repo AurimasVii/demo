@@ -509,13 +509,18 @@ function App() {
                   display: 'block'
                 }}
                 onClick={e => {
-                          e.stopPropagation();
-                          // Store both _id and name for robust lookup in game-info.html
-                          if (game._id) localStorage.setItem('selectedGameId', game._id);
-                          localStorage.setItem('selectedGameName', game.name);
-                          window.location.href = `/game-info.html?id=${encodeURIComponent(game._id || '')}&name=${encodeURIComponent(game.name)}`;
-                        }}
-                      >Daugiau informacijos</button>
+                  e.stopPropagation();
+                  // Store both _id, name, and images for robust lookup in game-info.html
+                  if (checkoutGame._id) localStorage.setItem('selectedGameId', checkoutGame._id);
+                  localStorage.setItem('selectedGameName', checkoutGame.name);
+                  if (checkoutGame.images && Array.isArray(checkoutGame.images)) {
+                    localStorage.setItem('selectedGameImages', JSON.stringify(checkoutGame.images));
+                  } else {
+                    localStorage.removeItem('selectedGameImages');
+                  }
+                  window.location.href = `/game-info.html?id=${encodeURIComponent(checkoutGame._id || '')}&name=${encodeURIComponent(checkoutGame.name)}`;
+                }}
+              >Daugiau informacijos</button>
             </div>
           </div>
         </div>
