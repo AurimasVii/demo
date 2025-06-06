@@ -431,7 +431,7 @@
           // Save to localStorage for main page scroll
           localStorage.setItem('scrollToCategory', catKey);
           localStorage.setItem('scrollSmooth', '1');
-          window.location.href = '/#' + catKey;
+          window.location.href = '/'; // Always redirect to root, let main page handle scroll
         };
       });
     }
