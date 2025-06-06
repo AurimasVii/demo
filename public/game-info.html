@@ -489,7 +489,7 @@
     function goToCategory(catKey) {
       localStorage.setItem('scrollToCategory', catKey);
       localStorage.setItem('scrollSmooth', '1');
-      window.location.href = '/index.html';
+      window.location.href = '/'; // Use root, not /index.html
     }
     // Example: attach to category links in side menu
     document.addEventListener('DOMContentLoaded', function() {
