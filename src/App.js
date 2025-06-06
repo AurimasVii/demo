@@ -342,8 +342,10 @@ function App() {
             <h3>{cat.name}</h3>
             <ul className="GamesList">
               {cat.games.map(game => {
-                // Show main image if set, else first image from images array, else fallback to game.image
-                let mainImg = game.mainImage || (Array.isArray(game.images) && game.images.length > 0 ? game.images[0] : game.image);
+                // Show main image if set and present in images, else first image from images array, else fallback to game.image
+                let mainImg = (game.mainImage && Array.isArray(game.images) && game.images.includes(game.mainImage))
+                  ? game.mainImage
+                  : (Array.isArray(game.images) && game.images.length > 0 ? game.images[0] : game.image);
                 return (
                   <li
                     key={game.name}
