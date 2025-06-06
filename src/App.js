@@ -174,14 +174,20 @@ const defaultCategories = [
   }
 ];
 
-const categoryIconMap = {
-  'Vandens pramogos': '/icons/swimming.png',
-  'Renginių įrangos nuoma': '/icons/tools.png',
-  'Pramogų vedimas': '/icons/confetti.png',
-  'Lauko žaidimai': '/icons/park.png',
-  'Vidaus pramogos': '/icons/cinema.png',
-  'Šaudymo pramogos': '/icons/shooting-range.png'
-};
+function getCategories() {
+  const stored = localStorage.getItem('categories');
+  if (stored) {
+    try {
+      return JSON.parse(stored);
+    } catch {
+      return defaultCategories;
+    }
+  }
+  return defaultCategories;
+}
+function setCategories(newCategories) {
+  localStorage.setItem('categories', JSON.stringify(newCategories));
+}
 
 function App() {
   const [categories, setCategories] = useState([]);
@@ -360,7 +366,7 @@ function App() {
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
             <div>
-              <img src={cat.icon} alt={cat.name} className='SwimIcon'/>
+              <img src={cat.icon || `/icons/confetti.png`} alt={cat.name} className='SwimIcon' onError={e => { e.target.onerror = null; e.target.src = '/icons/confetti.png'; }} />
               <p>{cat.name}</p>
             </div>
           </a>
