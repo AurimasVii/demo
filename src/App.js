@@ -236,12 +236,22 @@ function App() {
             if (!grouped[act.category]) grouped[act.category] = [];
             grouped[act.category].push(act);
           });
-          const cats = Object.keys(grouped).map(catName => ({
-            key: catName.replace(/\s/g, '').toLowerCase(),
-            name: catName,
-            icon: `/icons/${catName.replace(/\s/g, '').toLowerCase()}.png`,
-            games: grouped[catName]
-          }));
+          // Try to get icons from localStorage (admin may have set custom icons)
+          let customCats = [];
+          try {
+            const stored = localStorage.getItem('categories');
+            if (stored) customCats = JSON.parse(stored);
+          } catch {}
+          const cats = Object.keys(grouped).map(catName => {
+            const key = catName.replace(/\s/g, '').toLowerCase();
+            const custom = customCats.find(c => c.key === key || c.name === catName);
+            return {
+              key,
+              name: catName,
+              icon: custom && custom.icon ? custom.icon : (categoryIconMap[key] || '/icons/confetti.png'),
+              games: grouped[catName]
+            };
+          });
           setCategories(cats);
         } else {
           // Fallback to defaultCategories
