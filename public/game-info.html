@@ -509,22 +509,24 @@
       modal.style.display = 'flex';
       let disabledMsg = '';
       if (activity.hasQuantity && activity.quantity === 0) {
-        disabledMsg = '<div style="color:#d32f2f;margin-bottom:1em;font-weight:600;">Šiuo metu šios veiklos rezervuoti negalima</div>';
+        disabledMsg = '<div style="color:#d32f2f;margin:1em 0;font-weight:600">Šiuo metu šios veiklos rezervuoti negalima</div>';
       }
       modal.innerHTML = `
-        <div class="CheckoutModal" style="background:#fff;border-radius:16px;max-width:420px;width:95vw;padding:2em 1.5em;box-shadow:0 2px 24px rgba(0,119,255,0.10);animation:fadeIn 0.2s;position:relative;display:flex;flex-direction:column;align-items:center;">
-          <button class="CloseBtn" aria-label="Uždaryti" style="position:absolute;top:16px;right:16px;font-size:1.7em;background:none;border:none;color:#bbb;cursor:pointer;" onclick="closeReservationModal()">&times;</button>
+        <div class="CheckoutContent" style="max-width:480px;width:95vw;max-height:90vh;overflow-y:auto;padding:2em 1.5em;border-radius:18px;background:#fff;box-shadow:0 4px 32px rgba(0,119,255,0.10);position:relative;display:flex;flex-direction:column;align-items:center;">
+          <button class="CloseBtn" aria-label="Uždaryti" style="position:absolute;top:18px;right:18px;font-size:2em;background:none;border:none;color:#bbb;cursor:pointer;" onclick="closeReservationModal()">&times;</button>
           <h2 style="margin-top:0;color:#0077ff;font-size:1.3em;">Rezervuoti: ${activity.name}</h2>
           ${activity.mainImage ? `<img src="${activity.mainImage}" alt="${activity.name}" style="max-width:90%;max-height:180px;border-radius:12px;margin-bottom:1em;object-fit:cover;box-shadow:0 2px 12px rgba(0,119,255,0.07);" />` : ''}
-          ${disabledMsg}
-          <form id="reservationForm" class="CheckoutForm" autocomplete="off">
-            <label>Vardas:<br><input name="name" required maxlength="40" autocomplete="name" ${activity.hasQuantity && activity.quantity === 0 ? 'disabled' : ''} /></label><br>
-            <label>El. paštas:<br><input name="email" type="email" required maxlength="60" autocomplete="email" ${activity.hasQuantity && activity.quantity === 0 ? 'disabled' : ''} /></label><br>
-            <label>Telefonas:<br><input name="phone" required maxlength="30" autocomplete="tel" ${activity.hasQuantity && activity.quantity === 0 ? 'disabled' : ''} /></label><br>
-            <label>Data:<br><input name="date" type="date" required min="${new Date().toISOString().slice(0,10)}" ${activity.hasQuantity && activity.quantity === 0 ? 'disabled' : ''} /></label><br>
-            <label>Laikas:<br><select name="time" required ${activity.hasQuantity && activity.quantity === 0 ? 'disabled' : ''}><option value="">Pasirinkite datą</option></select></label><br>
-            <div id="reservationError" style="color:#d32f2f;font-size:0.98em;margin:0.5em 0 0.2em 0;"></div>
-            <button type="submit" style="background:${activity.hasQuantity && activity.quantity === 0 ? '#bbb' : '#0077ff'};color:#fff;border:none;border-radius:8px;padding:0.7em 2em;font-size:1em;font-weight:500;cursor:pointer;margin-top:0.7em;" ${activity.hasQuantity && activity.quantity === 0 ? 'disabled' : ''}>Rezervuoti</button>
+          <form id="reservationForm" class="CheckoutForm" autocomplete="off" style="width:100%;max-width:320px;display:flex;flex-direction:column;gap:0.7em;">
+            <input type="text" name="name" placeholder="Jūsų vardas" required ${activity.hasQuantity && activity.quantity === 0 ? 'disabled' : ''} />
+            <input type="email" name="email" placeholder="El. paštas" required ${activity.hasQuantity && activity.quantity === 0 ? 'disabled' : ''} />
+            <input type="tel" name="phone" placeholder="Telefonas" required ${activity.hasQuantity && activity.quantity === 0 ? 'disabled' : ''} />
+            ${activity.hasQuantity && activity.quantity === 0 ? disabledMsg : `
+              <input type="date" name="date" required min="${new Date().toISOString().slice(0,10)}" />
+              <select name="time" required style="margin-top:0.3em;">
+                <option value="">Pasirinkite laiką</option>
+              </select>
+              <button type="submit" style="background:#0077ff;color:#fff;border:none;border-radius:8px;padding:0.7em 2em;font-size:1em;font-weight:500;margin-top:0.7em;">Rezervuoti</button>
+            `}
           </form>
         </div>
       `;
