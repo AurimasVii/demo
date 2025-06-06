@@ -291,6 +291,13 @@
       let id = params.get('id');
       let name = params.get('name');
       activities = await fetch('/api/activities').then(r => r.json());
+      if (!id && !name) {
+        // Try to get from localStorage (React sets selectedGameId)
+        const storedId = localStorage.getItem('selectedGameId');
+        if (storedId) {
+          id = storedId;
+        }
+      }
       if (id) {
         activity = activities.find(a => a._id === id);
       } else if (name) {
