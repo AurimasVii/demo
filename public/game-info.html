@@ -296,9 +296,15 @@
     // --- Fetch activity by name from URL param ---
     async function fetchActivity() {
       const params = new URLSearchParams(window.location.search);
-      const name = params.get('name');
+      let name = params.get('name');
+      if (!name) {
+        document.getElementById('gameName').textContent = 'Veikla nerasta';
+        document.getElementById('reserveBtn').style.display = 'none';
+        return;
+      }
+      name = decodeURIComponent(name).toLowerCase().trim();
       activities = await fetch('/api/activities').then(r => r.json());
-      activity = activities.find(a => a.name === name);
+      activity = activities.find(a => a.name.toLowerCase().trim() === name);
       if (!activity) {
         document.getElementById('gameName').textContent = 'Veikla nerasta';
         document.getElementById('reserveBtn').style.display = 'none';
