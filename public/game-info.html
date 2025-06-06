@@ -294,8 +294,12 @@
       // Try to get from localStorage if no id or name
       if (!id && !name) {
         const storedId = localStorage.getItem('selectedGameId');
+        const storedName = localStorage.getItem('selectedGameName');
         if (storedId) {
           id = storedId;
+        }
+        if (!id && storedName) {
+          name = storedName;
         }
       }
       // Try to find by id (string or number)

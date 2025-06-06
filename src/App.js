@@ -416,6 +416,17 @@ function App() {
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600, color: '#23272f', fontSize: '1.15em', marginBottom: '0.3em' }}>{game.name}</div>
                       <div style={{ color: '#0077ff', fontWeight: 600 }}>{game.price}</div>
+                      <button
+                        type="button"
+                        style={{marginTop:'0.5em',background:'#eaf3ff',color:'#0077ff',border:'none',borderRadius:'8px',padding:'0.5em 1.2em',fontWeight:500,cursor:'pointer'}}
+                        onClick={e => {
+                          e.stopPropagation();
+                          // Store both _id and name for robust lookup in game-info.html
+                          if (game._id) localStorage.setItem('selectedGameId', game._id);
+                          localStorage.setItem('selectedGameName', game.name);
+                          window.location.href = `/game-info.html?id=${encodeURIComponent(game._id || '')}&name=${encodeURIComponent(game.name)}`;
+                        }}
+                      >Daugiau informacijos</button>
                     </div>
                   </li>
                 );
