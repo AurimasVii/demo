@@ -283,14 +283,6 @@ function App() {
       });
   }
 
-  // Helper to get image for an activity (backend or default)
-  function getActivityImage(activity) {
-    if (activity.mainImage) return activity.mainImage;
-    if (activity.images && activity.images.length > 0) return activity.images[0];
-    if (activity.image) return activity.image;
-    return '/icons/confetti.png'; // fallback
-  }
-
   return (
     <div className="App">
       {/* Side Menu Toggle Button */}
@@ -382,15 +374,27 @@ function App() {
           <section key={cat.key} id={cat.key}>
             <h3>{cat.name}</h3>
             <ul className="GamesList">
-              {cat.games.map(game => (
-                <li key={game._id || game.name} className="GameCard">
-                  <img src={getActivityImage(game)} alt={game.name} style={{width: '100%', maxWidth: 120, maxHeight: 120, borderRadius: 12, objectFit: 'cover', marginBottom: 8}} />
-                  <div style={{fontWeight:600,marginBottom:4}}>{game.name}</div>
-                  <div style={{color:'#0077ff',fontWeight:500,marginBottom:4}}>{game.price}</div>
-                  <div style={{fontSize:'0.98em',color:'#555',marginBottom:4}}>{game.description}</div>
-                  <button onClick={() => setCheckoutGame(game)} style={{background:'#0077ff',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5em 1.2em',fontWeight:500,cursor:'pointer'}}>Rezervuoti</button>
-                </li>
-              ))}
+              {cat.games.map(game => {
+                // Show main image if set and present in images, else first image from images array, else fallback to game.image
+                let mainImg = (game.mainImage && Array.isArray(game.images) && game.images.includes(game.mainImage))
+                  ? game.mainImage
+                  : (Array.isArray(game.images) && game.images.length > 0 ? game.images[0] : game.image);
+                return (
+                  <li
+                    key={game.name}
+                    className="GameCard"
+                    style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1.5em', padding: '1em 0' }}
+                    onClick={() => setCheckoutGame({ ...game, images: game.images, image: mainImg, category: cat.name })}
+                  >
+                    <img src={mainImg} alt={game.name} style={{ width: 96, height: 96, borderRadius: 14, objectFit: 'cover', boxShadow: '0 2px 12px #eaf3ff' }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 600, color: '#23272f', fontSize: '1.15em', marginBottom: '0.3em' }}>{game.name}</div>
+                      <div style={{ fontSize: '1em', color: '#555', marginBottom: '0.3em' }}>{game.description}</div>
+                      <div style={{ color: '#0077ff', fontWeight: 600 }}>{game.price}</div>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           </section>
         ))}
@@ -401,7 +405,9 @@ function App() {
         <div className="CheckoutModal" onClick={() => setCheckoutGame(null)}>
           <div className="CheckoutContent" onClick={e => e.stopPropagation()} style={{maxWidth:480, width:'95vw', maxHeight:'90vh', overflowY:'auto', padding:'2em 1.5em', borderRadius:18, background:'#fff', boxShadow:'0 4px 32px rgba(0,119,255,0.10)', position:'relative', display:'flex', flexDirection:'column', alignItems:'center'}}>
             <h2 style={{marginTop:0, color:'#0077ff', fontSize:'1.3em'}}>Rezervuoti: {checkoutGame.name}</h2>
-            <img src={getActivityImage(checkoutGame)} alt={checkoutGame.name} style={{maxWidth:'90%',maxHeight:180,borderRadius:12,marginBottom:'1em',objectFit:'cover',boxShadow:'0 2px 12px rgba(0,119,255,0.07)'}} />
+            {checkoutGame.mainImage && (
+              <img src={checkoutGame.mainImage} alt={checkoutGame.name} style={{maxWidth:'90%',maxHeight:180,borderRadius:12,marginBottom:'1em',objectFit:'cover',boxShadow:'0 2px 12px rgba(0,119,255,0.07)'}} />
+            )}
             <form id="reservationForm" className="CheckoutForm" autoComplete="off" onSubmit={handleReservationSubmit}>
               <input type="text" name="name" placeholder="Jūsų vardas" required />
               <input type="email" name="email" placeholder="El. paštas" required />
