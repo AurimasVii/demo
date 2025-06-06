@@ -431,8 +431,20 @@ function App() {
                       <div style={{ color: '#0077ff', fontWeight: 600 }}>{game.price}</div>
                       <button
                         type="button"
-                        style={{marginTop:'0.5em',background:'#eaf3ff',color:'#0077ff',border:'none',borderRadius:'8px',padding:'0.5em 1.2em',fontWeight:500,cursor:'pointer'}}
-                        onClick={e => {
+                        className="CheckoutInfoBtn"
+                        style={{
+                          background: '#0077ff',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: '8px',
+                          padding: '0.7em 2em',
+                          fontSize: '1em',
+                          fontWeight: 500,
+                          cursor: 'pointer',
+                          transition: 'background 0.18s, transform 0.18s',
+                          margin: '0 auto',
+                          display: 'block'
+                        }}onClick={e => {
                           e.stopPropagation();
                           // Store both _id and name for robust lookup in game-info.html
                           if (game._id) localStorage.setItem('selectedGameId', game._id);
@@ -496,15 +508,14 @@ function App() {
                   margin: '0 auto',
                   display: 'block'
                 }}
-                onClick={() => {
-                  if (checkoutGame && checkoutGame._id) {
-                    localStorage.setItem('selectedGameId', checkoutGame._id);
-                  } else if (checkoutGame && checkoutGame.name) {
-                    localStorage.setItem('selectedGameId', checkoutGame.name);
-                  }
-                  window.location.href = '/game-info.html';
-                }}
-              >Daugiau informacijos</button>
+                onClick={e => {
+                          e.stopPropagation();
+                          // Store both _id and name for robust lookup in game-info.html
+                          if (game._id) localStorage.setItem('selectedGameId', game._id);
+                          localStorage.setItem('selectedGameName', game.name);
+                          window.location.href = `/game-info.html?id=${encodeURIComponent(game._id || '')}&name=${encodeURIComponent(game.name)}`;
+                        }}
+                      >Daugiau informacijos</button>
             </div>
           </div>
         </div>
