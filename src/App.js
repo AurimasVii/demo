@@ -406,23 +406,8 @@ function App() {
       {checkoutGame && (
         <div className="CheckoutModal" onClick={() => setCheckoutGame(null)}>
           <div className="CheckoutContent" onClick={e => e.stopPropagation()} style={{maxWidth:480, width:'95vw', maxHeight:'90vh', overflowY:'auto', padding:'2em 1.5em', borderRadius:18, background:'#fff', boxShadow:'0 4px 32px rgba(0,119,255,0.10)', position:'relative', display:'flex', flexDirection:'column', alignItems:'center'}}>
-            <button className="CloseBtn" onClick={() => setCheckoutGame(null)} style={{position:'absolute',top:18,right:18,fontSize:'2em',background:'none',border:'none',color:'#bbb',cursor:'pointer'}}>&times;</button>
-            <h2 style={{marginBottom:'0.5em', color:'#23272f', fontWeight:700, textAlign:'center'}}>{checkoutGame.category}</h2>
-            {/* Image slider for multiple images */}
-            {Array.isArray(checkoutGame.images) && checkoutGame.images.length > 0 ? (
-              <div style={{width:'100%',display:'flex',justifyContent:'center',alignItems:'center',gap:'0.7em',margin:'1em 0',flexWrap:'wrap'}}>
-                {checkoutGame.images.map((img, i) => (
-                  <img key={i} src={img} alt={checkoutGame.name} style={{maxWidth:'120px',maxHeight:'90px',borderRadius:'10px',objectFit:'cover',boxShadow:'0 1px 8px #eaf3ff'}} />
-                ))}
-              </div>
-            ) : (
-              <img src={checkoutGame.image} alt={checkoutGame.name} style={{ width: 80, height: 80, borderRadius: 12, objectFit: 'cover', margin: '1em auto' }} />
-            )}
-            <div style={{ marginBottom: '0.5em', color: '#23272f', fontWeight:600, fontSize:'1.15em', textAlign:'center' }}>{checkoutGame.name}</div>
-            <div style={{ marginBottom: '0.5em', color: '#444', fontSize:'1.05em', textAlign:'center' }}>{checkoutGame.description}</div>
-            <div style={{ marginBottom: '0.5em', color: '#0077ff', fontWeight: 700, fontSize:'1.08em', textAlign:'center' }}>Kaina: {checkoutGame.price}</div>
-            <div style={{ marginBottom: '1.5em', color: '#555', fontSize: '1.05em', whiteSpace:'pre-line', wordBreak:'break-word', lineHeight:1.6, textAlign:'center' }}>{checkoutGame.info}</div>
-            <form className="CheckoutForm" onSubmit={handleReservationSubmit} style={{width:'100%',maxWidth:340,margin:'0 auto'}}>
+            <h2 style={{marginTop:0, color:'#0077ff', fontSize:'1.3em'}}>Rezervuoti: {checkoutGame.name}</h2>
+            <form id="reservationForm" className="CheckoutForm" autoComplete="off" onSubmit={handleReservationSubmit}>
               <input type="text" name="name" placeholder="Jūsų vardas" required />
               <input type="email" name="email" placeholder="El. paštas" required />
               <input type="tel" name="phone" placeholder="Telefonas" required />
@@ -437,7 +422,11 @@ function App() {
                   })}
                 </select>
               )}
-              <button type="submit">Rezervuoti</button>
+              {checkoutGame.hasQuantity && checkoutGame.quantity === 0 ? (
+                <button type="button" disabled style={{background:'#bbb',color:'#fff',border:'none',borderRadius:'8px',padding:'0.7em 2em',fontSize:'1em',fontWeight:500,marginTop:'0.7em'}}>Užimta</button>
+              ) : (
+                <button type="submit" style={{background:'#0077ff',color:'#fff',border:'none',borderRadius:'8px',padding:'0.7em 2em',fontSize:'1em',fontWeight:500,marginTop:'0.7em'}}>Rezervuoti</button>
+              )}
             </form>
             <div style={{ marginTop: '1.5em', width:'100%', display:'flex', justifyContent:'center' }}>
               <button

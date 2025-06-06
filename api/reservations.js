@@ -49,6 +49,9 @@ export default async function handler(req, res) {
     if (activity.hasQuantity) {
       // Count reservations for this activity/date/time
       const count = await Reservation.countDocuments({ activityId, date, time });
+      if (activity.quantity <= 0) {
+        return res.status(400).json({ error: 'No more slots available for this activity' });
+      }
       if (count >= activity.quantity) {
         return res.status(400).json({ error: 'No more slots available for this time' });
       }
@@ -61,6 +64,12 @@ export default async function handler(req, res) {
     }
     const reservation = new Reservation({ ...req.body, created: new Date() });
     await reservation.save();
+    // Decrement quantity for hasQuantity activities (global, not per slot)
+    if (activity.hasQuantity) {
+      // Only decrement if there are still available slots (should be true here)
+      activity.quantity = Math.max(0, activity.quantity - 1);
+      await activity.save();
+    }
     // Send email to admin
     try {
       await sendAdminEmail(reservation, activity);

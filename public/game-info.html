@@ -298,15 +298,25 @@
           id = storedId;
         }
       }
+      // Try to find by id
       if (id) {
-        activity = activities.find(a => a._id === id);
-      } else if (name) {
-        name = decodeURIComponent(name).toLowerCase().trim();
-        activity = activities.find(a => a.name.toLowerCase().trim() === name);
+        activity = activities.find(a => String(a._id) === String(id));
       }
-      if (!activity) {
+      // If not found by id, try by name
+      if ((!activity || !activity._id) && name) {
+        name = decodeURIComponent(name).toLowerCase().trim();
+        activity = activities.find(a => a.name && a.name.toLowerCase().trim() === name);
+      }
+      // If still not found, try by name from id (React may store name in id param)
+      if ((!activity || !activity._id) && id) {
+        const idAsName = decodeURIComponent(id).toLowerCase().trim();
+        activity = activities.find(a => a.name && a.name.toLowerCase().trim() === idAsName);
+      }
+      if (!activity || !activity._id) {
         document.getElementById('gameName').textContent = 'Veikla nerasta';
         document.getElementById('reserveBtn').style.display = 'none';
+        // Debug info for admin
+        console.warn('Activity not found. Params:', { id, name, activities });
         return;
       }
       // Fill in activity info
@@ -315,6 +325,16 @@
       document.getElementById('gamePrice').textContent = activity.price;
       document.getElementById('gameDesc').textContent = activity.description;
       document.getElementById('gameInfo').textContent = activity.info;
+      // If activity.quantity is 0, show 'Užimta' and disable reservation
+      if (activity.hasQuantity && activity.quantity === 0) {
+        document.getElementById('reserveBtn').textContent = 'Užimta';
+        document.getElementById('reserveBtn').disabled = true;
+        document.getElementById('reserveBtn').style.background = '#bbb';
+      } else {
+        document.getElementById('reserveBtn').textContent = 'Rezervuoti';
+        document.getElementById('reserveBtn').disabled = false;
+        document.getElementById('reserveBtn').style.background = '';
+      }
       // ...slider rendering code (unchanged)...
     }
 
